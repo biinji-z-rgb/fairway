@@ -4,66 +4,82 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
-<meta name="theme-color" content="#14342b">
+<meta name="theme-color" content="#07130e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Fairway">
 <title>Fairway – Carte, distances & index</title>
 <style>
-:root{--bg:#f3f5ef;--fg:#12261f;--card:#fff;--pine:#14342b;--ball:#e6d24a;--mut:#6b7a72;--line:#dfe5da;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1a15;--fg:#eaf0e6;--card:#16261f;--pine:#2c6a57;--mut:#93a59b;--line:#25382f}}
+:root{--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--bg:#07130e;--bg2:#0d2119;--card:rgba(255,255,255,.045);--fg:#f3efe4;--mut:#8fa79b;--gold:#c9a961;--gold2:#e7d29a;--line:rgba(201,169,97,.16);--pine:#1f5c48;--ball:#e7d29a;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--fg);font-family:"Avenir Next",Avenir,"Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;max-width:520px;margin:0 auto}
-main{flex:1;overflow-y:auto;padding:16px}
-h1{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin:0 0 12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+body{background:radial-gradient(120% 60% at 50% -10%,#173a2c 0%,var(--bg) 60%);background-color:var(--bg);color:var(--fg);font-family:-apple-system,"SF Pro Text","Segoe UI",system-ui,sans-serif;display:flex;flex-direction:column;max-width:520px;margin:0 auto;-webkit-tap-highlight-color:transparent}
+main{flex:1;overflow-y:auto;padding:18px 16px 24px}
+h1{font-family:var(--serif);font-weight:500;letter-spacing:.01em;font-size:28px;margin:0 0 12px}
+.hero{background:linear-gradient(155deg,#1a4a39 0%,#0c261c 70%);border:1px solid rgba(201,169,97,.3);border-radius:22px;padding:20px;margin-bottom:14px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.brand{font-size:11px;letter-spacing:.28em;color:var(--gold);font-weight:600}
+.big2{font-family:var(--serif);font-size:34px;line-height:1.1;margin:6px 0}.big2 span{font-size:15px;color:var(--mut);margin-left:6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;backdrop-filter:blur(6px)}
+.card.off{opacity:.55}
+details.card summary{cursor:pointer}
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-button{font-family:inherit;color:inherit}
-.club,.sm{padding:12px 0;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;font:600 14px inherit;font-family:inherit}
-.club.on,.sm.on{background:var(--pine);color:#fff;border-color:var(--pine)}
-.club.on .mut{color:#cfe3d8}
-.big{width:100%;padding:18px;border:0;border-radius:14px;background:var(--ball);color:#12261f;font:700 18px inherit;font-family:inherit;margin-top:14px}
-.big.alt{background:var(--pine);color:#fff}
-.ghost{background:none;border:0;color:var(--mut);font:14px inherit;font-family:inherit;padding:10px;width:100%}
-.num{font-family:Georgia,serif;font-size:48px;line-height:1;min-width:64px;text-align:center}
-.mut{color:var(--mut);font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:500}
+button{font-family:inherit;color:inherit;cursor:pointer;transition:transform .08s,opacity .2s}button:active{transform:scale(.97)}
+.club,.sm{padding:12px 0;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--fg);border-radius:12px;font-weight:600;font-size:14px}
+.club.on{background:linear-gradient(135deg,#e7d29a,#c9a961);color:#1a1406;border-color:transparent}
+.sm.on{background:rgba(201,169,97,.16);border-color:var(--gold);color:var(--gold2)}
+.big{width:100%;padding:17px;border:0;border-radius:16px;background:linear-gradient(135deg,#e7d29a,#c9a961);color:#1a1406;font-weight:700;font-size:17px;margin-top:14px;box-shadow:0 8px 20px rgba(201,169,97,.22)}
+.big.alt{background:linear-gradient(160deg,#1f5c48,#153d30);color:var(--fg);border:1px solid rgba(201,169,97,.35);box-shadow:none}
+.ghost{background:none;border:0;color:var(--mut);font-size:14px;padding:10px;width:100%}
+.num{font-family:var(--serif);font-size:48px;line-height:1;min-width:64px;text-align:center}
+.mut{color:var(--mut);font-size:13px}.gold{color:var(--gold2)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px 4px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:500}
 td:not(:first-child),th:not(:first-child){text-align:right}
-input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--fg);font:16px inherit;font-family:inherit}
+input,select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(0,0,0,.25);color:var(--fg);font:16px inherit}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
-nav{display:flex;border-top:1px solid var(--line);background:var(--card)}
-nav button{flex:1;padding:12px 0;border:0;background:none;color:var(--mut);font:600 12px inherit;font-family:inherit}
-nav button.on{color:var(--fg);box-shadow:inset 0 3px 0 var(--ball)}
-#ad{height:50px;background:repeating-linear-gradient(45deg,#e8ebe3,#e8ebe3 8px,#dde2d8 8px,#dde2d8 16px);color:#556;display:flex;align-items:center;justify-content:center;font-size:12px}
-.pill{display:inline-block;background:var(--ball);color:#12261f;border-radius:99px;padding:2px 10px;font-weight:700;font-size:12px}
-.pm{width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--fg);font-size:28px}
-.pl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
-.pl:last-child{border:0}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
+nav{display:flex;border-top:1px solid var(--line);background:rgba(7,19,14,.92);backdrop-filter:blur(10px)}
+nav button{flex:1;padding:9px 0 8px;border:0;background:none;color:var(--mut);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px}
+nav button.on{color:var(--gold2)}
+#ad{height:44px;background:rgba(255,255,255,.03);border-top:1px solid var(--line);color:#5f7a6e;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.12em}
+.pill{display:inline-block;background:linear-gradient(135deg,#e7d29a,#c9a961);color:#1a1406;border-radius:99px;padding:2px 10px;font-weight:700;font-size:12px;margin-left:6px}
+.pm{border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--fg)}
+.pl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}.pl:last-child{border:0}
 .hd{display:flex;align-items:center;justify-content:space-between}
-.hd button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:20px;color:var(--fg)}
-.dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid #0004;margin-right:6px}
+.hd button{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:20px;color:var(--fg)}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid #0006;margin-right:6px}
+.bar{height:8px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0 4px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#c9a961,#e7d29a)}
+#qp{position:fixed;inset:0;z-index:10;background:var(--bg);color:var(--fg);padding:24px;overflow:auto;text-align:center}#qp[hidden]{display:none}
 #mp{position:fixed;inset:0;z-index:9;background:#000}#mp[hidden]{display:none}
 #mapc{position:absolute;inset:0}
-#mbar{position:absolute;left:12px;right:68px;top:calc(12px + env(safe-area-inset-top,0px));background:rgba(20,52,43,.92);color:#fff;border-radius:12px;padding:10px 12px;font-size:14px}
+#mbar{position:absolute;left:12px;right:68px;top:calc(12px + env(safe-area-inset-top,0px));background:rgba(7,19,14,.92);border:1px solid var(--line);color:#fff;border-radius:14px;padding:10px 12px;font-size:14px}
 #mx{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));width:46px;height:46px;border-radius:50%;border:0;background:#fff;color:#12261f;font-size:18px}
 </style></head><body>
 <main id="m"></main>
 <div id="ad">Bandeau publicitaire (AdSense / sponsor)</div>
 <nav id="nav"></nav>
+<div id="qp" hidden><div id="qb"></div><button class="big alt" onclick="$('qp').hidden=true">Fermer</button></div>
 <div id="mp" hidden><div id="mapc"></div><div id="mbar"></div><button id="mx" onclick="closeMap()" aria-label="Fermer">✕</button></div>
 <script>
-const CLUBS=["Driver","Bois 3","Bois 5","Hybride","Fer 4","Fer 5","Fer 6","Fer 7","Fer 8","Fer 9","PW","SW","LW","Putter"];
+const CLUBS0=["Driver","Bois 3","Bois 5","Hybride","Fer 4","Fer 5","Fer 6","Fer 7","Fer 8","Fer 9","PW","SW","LW","Putter"];
+let CLUBS=CLUBS0.slice();
+/* ⚙️ À REMPLIR (voir README) : Supabase (comptes + sauvegarde) et Stripe (abonnement) */
+const SB_URL="",SB_KEY="",PAY_URL="",PRICE="2,99 € / mois";
+const SBJS="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 const PARS=[4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5];
 const TEES=["Blanc","Jaune","Bleu","Rouge"],TC={Blanc:"#f2f2f2",Jaune:"#f0d000",Bleu:"#2a6fdb",Rouge:"#d64545",Noir:"#222",Orange:"#f08a24",Vert:"#2f9e44"};
 const ML="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/";
 const ESRI="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+const PEER="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js",QR="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 const DEM="https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
 let S={shots:[],rounds:[],premium:false,club:"Driver",pending:null,tab:"card",game:null,
- setup:[{n:"Moi",h:0,t:"Jaune"}],view:"hole",courses:{},course:null,found:[],msg:"",q:""};
+ setup:[{n:"Moi",h:0,t:"Jaune"}],view:"hole",courses:{},course:null,found:[],msg:"",q:"",pid:null,mn:"",mh:null,join:null,jmsg:"",wx:null,pre:null,edit:-1,history:[],delq:[],sy:"",amsg:"",user:null,bag:null,bagAt:0};
 try{const r=localStorage.getItem("fw2");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+if(!S.pid)S.pid=Math.random().toString(36).slice(2,12);
+const ME=S.pid;
+if(!S.bag)S.bag=CLUBS0.map(n=>({n,in:1}));
+function syncClubs(){CLUBS=S.bag.filter(c=>c.in).map(c=>c.n)}syncClubs();
+if(!S.user)S.premium=false;
 const save=()=>{try{localStorage.setItem("fw2",JSON.stringify(S))}catch(e){}};
-const TABS=[["card","Jouer"],["sheet","Carte"],["dist","Sac"],["idx","Index"],["pro","Pro"]];
+const TABS=[["card","Jouer"],["sheet","Carte"],["dist","Sac"],["idx","Index"],["me","Profil"]];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -79,7 +95,7 @@ async function start(){let p=null;try{p=await gps()}catch(e){}S.pending={club:S.
 async function finish(){let d=null;
  if(S.pending.pos){try{d=Math.round(dist(S.pending.pos,await gps()))}catch(e){}}
  if(d===null){d=parseInt(prompt("GPS indisponible. Distance en mètres ?"));if(!(d>=0))return}
- S.shots.push({club:S.pending.club,d,g:S.game?S.game.id:0,h:S.game?S.game.hole:0,t:Date.now()});if(S.game)bump(0,1);
+ S.shots.push({club:S.pending.club,d,g:S.game?S.game.id:0,h:S.game?S.game.hole:0,t:Date.now()});if(S.game)bump(mi(),1);
  S.pending=null;save();render()}
 
 /* ---------- Parcours (OpenStreetMap) ---------- */
@@ -120,7 +136,7 @@ async function near(){S.msg="Localisation…";render();
 async function pick(i){const f=S.found[i];S.msg="Chargement du golf…";render();
  try{const[s,w,n,e]=f.bb,m=.0004,box=`${s-m},${w-m},${n+m},${e+m}`;
   const el=await op(`[out:json][timeout:30];(way["golf"="hole"](${box});nwr["golf"="tee"](${box}););out geom tags;`);
-  const r=build(el);S.courses[f.id]={id:f.id,name:f.name,holes:r.holes,tees:r.tees};S.course=f.id;S.found=[];S.msg="";save()}
+  const r=build(el);S.courses[f.id]={id:f.id,name:f.name,holes:r.holes,tees:r.tees};S.course=f.id;S.found=[];S.msg="";save();try{await loadEl(S.courses[f.id])}catch(e){}}
  catch(e){S.msg="Chargement impossible (réseau ?)."}render()}
 function freeCourse(){S.courses._={id:"_",name:"Parcours libre",tees:[],holes:PARS.map((p,i)=>({ref:i+1,par:p,pts:null,len:0}))};S.course="_";save();render()}
 function cyc(i){const h=C().holes[i],p=par(i);h.par=p>=5?3:p+1;save();render()}
@@ -132,9 +148,9 @@ function crsSearch(){const cs=Object.values(S.courses).filter(x=>x.id!=="_");
  <button class="ghost" onclick="freeCourse()">Jouer sans golf (pars génériques)</button>
  <p class="mut">Données © contributeurs OpenStreetMap, qualité variable selon les clubs.</p>`}
 function holesCard(){const c=C();
- return `<details class="card"><summary><b>Pars et distances</b> <span class="mut">${c.holes.filter(h=>h.pts).length}/${c.holes.length} trous cartographiés</span></summary><div style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th><th>Distance</th></tr>
- ${c.holes.map((h,i)=>`<tr><td>${h.ref}</td><td><button class="sm" style="padding:4px 12px" onclick="cyc(${i})">${par(i)}${h.par?"":"*"}</button></td><td>${h.tees?Object.entries(h.tees).map(([k,v])=>`<span class="dot" style="background:${TC[k]}"></span>${v}`).join(" "):h.len?h.len+" m":"–"}</td></tr>`).join("")}</table></div>
- <p class="mut">* Par absent des données : touche pour le corriger.</p></details>`}
+ return `<details class="card"><summary><b>Pars et distances</b> <span class="mut">${c.holes.filter(h=>h.pts).length}/${c.holes.length} trous cartographiés</span></summary><div style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th><th>Distance</th><th>Dén.</th></tr>
+ ${c.holes.map((h,i)=>`<tr><td>${h.ref}</td><td><button class="sm" style="padding:4px 12px" onclick="cyc(${i})">${par(i)}${h.par?"":"*"}</button></td><td>${h.tees?Object.entries(h.tees).map(([k,v])=>`<span class="dot" style="background:${TC[k]}"></span>${v}`).join(" "):h.len?h.len+" m":"–"}</td><td>${h.el?((h.el[1]-h.el[0])>0?"+":"")+Math.round(h.el[1]-h.el[0])+" m":"–"}</td></tr>`).join("")}</table></div>
+ <p class="mut">* Par absent des données : touche pour le corriger. Dénivelé tee → green issu de données d'altitude (précision de quelques mètres).</p></details>`}
 
 /* ---------- Vue 3D ---------- */
 const loadML=()=>window.maplibregl?Promise.resolve():new Promise((ok,ko)=>{
@@ -165,71 +181,144 @@ async function openMap(h,all){const c=C(),H=c.holes[h],hs=c.holes.filter(x=>x.pt
 function closeMap(){if(MP)MP.remove();MP=null;$("mp").hidden=true}
 function onPos(){updCaddie();if(MP&&POS){if(!MP.__u)MP.__u=new maplibregl.Marker({color:"#2a9df4"}).setLngLat([POS.lng,POS.lat]).addTo(MP);else MP.__u.setLngLat([POS.lng,POS.lat])}}
 
-/* ---------- Caddie virtuel ---------- */
+/* ---------- Météo, dénivelé, caddie ---------- */
+let WX=S.wx&&Date.now()-S.wx.at<10800000?S.wx:null,WXT=0;
+const wcode=c=>c===0?"ciel dégagé":c<=3?"nuageux":c<=48?"brouillard":c<=67||(c>=80&&c<=82)?"pluie":c<=77||(c>=85&&c<=86)?"neige":"orage";
+async function wx(){if(Date.now()-WXT<600000||!navigator.onLine)return;const c=C(),H=c&&c.holes.find(x=>x.pts);if(!H)return;WXT=Date.now();
+ try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${H.pts[0][0]}&longitude=${H.pts[0][1]}&current=temperature_2m,wind_speed_10m,wind_direction_10m,weather_code&wind_speed_unit=ms`);
+  const j=(await r.json()).current;WX={t:j.temperature_2m,ws:j.wind_speed_10m,wd:j.wind_direction_10m,code:j.weather_code,at:Date.now()};S.wx=WX;save();updCaddie()}catch(e){WXT=0}}
+async function loadEl(c){if(!c||!navigator.onLine)return;const hs=c.holes.filter(h=>h.pts&&!h.el);if(!hs.length)return;
+ const pts=hs.flatMap(h=>[h.pts[0],h.pts[h.pts.length-1]]);
+ const r=await fetch(`https://api.open-meteo.com/v1/elevation?latitude=${pts.map(p=>p[0].toFixed(5)).join(",")}&longitude=${pts.map(p=>p[1].toFixed(5)).join(",")}`);
+ const e=(await r.json()).elevation;if(!e||e.length!==pts.length)return;hs.forEach((h,i)=>{h.el=[e[2*i],e[2*i+1]]});save()}
 const DEF={Driver:200,"Bois 3":180,"Bois 5":165,Hybride:150,"Fer 4":145,"Fer 5":135,"Fer 6":125,"Fer 7":115,"Fer 8":105,"Fer 9":95,PW:85,SW:65,LW:45};
 function avg(c){const a=S.shots.filter(s=>s.club===c).map(s=>s.d);return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null}
 const cd=c=>avg(c)||DEF[c]||0;
 function rec(r){if(r<=12)return"Putter";let b=null,bd=1e9;
- CLUBS.forEach(c=>{if(c==="Putter")return;const d=cd(c),e=Math.abs(d-r)+(d<r?8:0);if(e<bd){bd=e;b=c}});return b}
+ CLUBS.forEach(c=>{if(c==="Putter")return;const d=cd(c);if(!d)return;const e=Math.abs(d-r)+(d<r?8:0);if(e<bd){bd=e;b=c}});return b||"Putter"}
 let POS=null,WID=null;
 function watch(){if(WID!=null||!navigator.geolocation)return;
  WID=navigator.geolocation.watchPosition(p=>{POS={lat:p.coords.latitude,lng:p.coords.longitude};onPos()},()=>{},{enableHighAccuracy:true})}
 function unwatch(){if(WID!=null&&navigator.geolocation)navigator.geolocation.clearWatch(WID);WID=null;POS=null}
+const mi=()=>Math.max(0,S.game.players.findIndex(p=>p.pid===ME));
+const P=()=>S.game.players[mi()];
 function remain(){const g=S.game,c=C(),H=c&&c.holes[g.hole];if(!H)return null;
  if(POS&&H.pts){const e=H.pts[H.pts.length-1];return{r:Math.round(dist(POS,{lat:e[0],lng:e[1]})),gps:true}}
- const L=hlen(g.hole,g.players[0].t);if(!L)return null;
+ const L=hlen(g.hole,P().t);if(!L)return null;
  return{r:Math.max(0,L-S.shots.filter(s=>s.g===g.id&&s.h===g.hole).reduce((a,s)=>a+s.d,0)),gps:false}}
-function updCaddie(){if(!S.game)return;const q=remain();let a,b;
- if(!q){a="Pas de tracé pour ce trou : pas de distance au green.";b=""}
- else{const c=rec(q.r);a=`<span style="font-size:30px;font-family:Georgia,serif">${q.r} m</span> du green <span class="mut">${q.gps?"(GPS)":"(estimé)"}</span>`;
-  b=`Caddie : <b>${c}</b>${c==="Putter"?"":" (ta moyenne : "+cd(c)+" m)"} <button class="sm on" style="padding:6px 12px;margin-left:6px" onclick="pickRec()">Prendre</button>`}
- if($("cad"))$("cad").innerHTML=a+(b?"<br>"+b:"");
- if($("dg"))$("dg").textContent=q?q.r+" m du green · conseil : "+rec(q.r):"Position…"}
-function pickRec(){const q=remain();if(q){S.club=rec(q.r);render()}}
+/* distance ajustée : dénivelé (1 m de montée ≈ +1 m) et vent (+2,2 %/m/s de face, −1,1 %/m/s dans le dos) */
+function plays(q){const H=C().holes[S.game.hole];let d=q.r,de=0,head=null,cross=null;
+ if(H.el&&H.len){de=(H.el[1]-H.el[0])*Math.min(1,q.r/H.len);d+=de}
+ if(WX&&H.pts&&Date.now()-WX.at<10800000){const a=H.pts[0],b=H.pts[H.pts.length-1],an=(WX.wd-brg(a,b))*Math.PI/180;
+  head=WX.ws*Math.cos(an);cross=WX.ws*Math.sin(an);d+=q.r*(head>0?head*.022:head*.011)}
+ return{d:Math.round(d),de:Math.round(de),head,cross}}
+function updCaddie(){if(!S.game)return;wx();const q=remain();let a,b="";
+ if(!q)a="Pas de tracé pour ce trou : pas de distance au green.";
+ else{const p=plays(q),c=rec(p.d),f=[];
+  if(Math.abs(p.de)>=2)f.push(p.de>0?"▲ montée +"+p.de+" m":"▼ descente "+p.de+" m");
+  if(p.head!=null){const h=Math.round(p.head*3.6),x=Math.round(p.cross*3.6);f.push("vent "+(h>=0?"de face ":"dans le dos ")+Math.abs(h)+" km/h");if(Math.abs(x)>=5)f.push("travers de "+(x>0?"droite ":"gauche ")+Math.abs(x)+" km/h")}
+  a=`<span style="font-size:30px;font-family:Georgia,serif">${q.r} m</span> du green <span class="mut">${q.gps?"(GPS)":"(estimé)"}</span>`;
+  b=`Distance ajustée : <b>${p.d} m</b>${f.length?` <span class="mut">(${f.join(" · ")})</span>`:""}<br>Caddie : <b>${c}</b>${c==="Putter"?"":" (ta moyenne : "+cd(c)+" m)"} <button class="sm on" style="padding:6px 12px;margin-left:6px" onclick="pickRec()">Prendre</button>`;
+  if($("dg"))$("dg").textContent=p.d+" m ajustés · conseil : "+c}
+ if(WX)b+=`<div class="mut" style="margin-top:6px">${Math.round(WX.t)}°C · ${wcode(WX.code)} · vent ${Math.round(WX.ws*3.6)} km/h${Date.now()-WX.at>1800000?" (relevé il y a "+Math.round((Date.now()-WX.at)/60000)+" min)":""}</div>`;
+ else b+=`<div class="mut" style="margin-top:6px">Météo indisponible hors connexion : conseils sans vent.</div>`;
+ if($("cad"))$("cad").innerHTML=a+(b?"<br>"+b:"")}
+function pickRec(){const q=remain();if(q){S.club=rec(plays(q).d);render()}}
+
+/* ---------- Multijoueur (QR code + PeerJS) ---------- */
+const loadJS=src=>new Promise((ok,ko)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
+let NET=null;
+const pub=()=>({id:S.game.id,nh:S.game.nh,room:S.game.room,course:C(),players:S.game.players});
+function push(){if(!NET||!S.game)return;
+ if(NET.role==="host")NET.conns.forEach(c=>c.open&&c.send({t:"g",g:pub()}));
+ else if(NET.conn&&NET.conn.open){const p=P();NET.conn.send({t:"s",pid:ME,s:p.s,tee:p.t})}}
+function refresh(){const a=document.activeElement;if(a&&(a.tagName==="INPUT"||a.tagName==="SELECT"))return;render()}
+function renderJ(){const e=$("qj");if(e&&S.game)e.innerHTML=`<p><b>${S.game.players.length} joueur(s)</b> : ${S.game.players.map(p=>esc(p.n)).join(", ")}</p>`}
+function host(){if(NET&&NET.role==="host")return;const p=new Peer(S.game.room);NET={role:"host",peer:p,conns:[]};
+ p.on("connection",c=>{NET.conns.push(c);c.on("data",m=>hostRx(c,m));c.on("close",()=>{NET.conns=NET.conns.filter(x=>x!==c)})});p.on("error",()=>{})}
+function hostRx(c,m){const g=S.game;if(!g)return;
+ if(m.t==="hello"){let p=g.players.find(x=>x.pid===m.pid);
+  if(!p){if(g.players.length>=4){c.send({t:"full"});return}
+   g.players.push({n:m.n,h:m.h,t:m.tee||"Jaune",pid:m.pid,s:m.s&&m.s.length===g.nh?m.s:Array(g.nh).fill(0)})}
+  else if(m.s&&m.s.length===g.nh&&m.s.some(x=>x))p.s=m.s;
+  save();c.send({t:"g",g:pub()});push();renderJ();refresh()}
+ if(m.t==="s"){const p=g.players.find(x=>x.pid===m.pid);if(p){p.s=m.s;if(m.tee)p.t=m.tee;save();push();refresh()}}}
+async function invite(){$("qp").hidden=false;$("qb").innerHTML="Préparation…";
+ try{await loadJS(PEER);await loadJS(QR)}catch(e){$("qb").innerHTML="<p>Une connexion internet est nécessaire pour inviter des joueurs.</p>";return}
+ S.game.inv=1;save();host();
+ const url=location.origin+location.pathname+"?join="+S.game.room,q=qrcode(0,"M");q.addData(url);q.make();
+ $("qb").innerHTML=`<h1>Inviter des joueurs</h1><div style="background:#fff;padding:12px;border-radius:12px;display:inline-block">${q.createSvgTag(5,0)}</div>
+ <p>Les autres joueurs scannent ce QR code avec l'appareil photo de leur smartphone. Ils gardent leur propre index.</p><p class="mut" style="word-break:break-all">${url}</p><div id="qj"></div>
+ ${navigator.share?`<button class="sm on" style="padding:10px 16px" onclick="navigator.share({url:'${url}'})">Partager le lien</button>`:""}`;renderJ()}
+async function joinGame(){const n=$("jn").value.trim()||"Joueur";S.mn=n;S.mh=+$("jh").value||0;
+ if(S.game&&!confirm("Quitter ta partie en cours ?"))return;
+ S.game=null;S.jmsg="Connexion…";render();connect(S.join)}
+async function connect(room){try{await loadJS(PEER)}catch(e){S.jmsg="Connexion internet nécessaire.";render();return}
+ const p=new Peer();NET={role:"join",peer:p,conn:null,room};
+ p.on("open",()=>{const c=p.connect(room,{reliable:true});NET.conn=c;
+  c.on("open",()=>{const o=S.game&&S.game.players.find(x=>x.pid===ME);c.send({t:"hello",pid:ME,n:S.mn||"Joueur",h:S.mh||0,tee:o?o.t:"Jaune",s:o?o.s:null})});
+  c.on("data",joinRx);c.on("close",()=>{setTimeout(()=>{if(NET&&NET.role==="join")connect(room)},4000)})});
+ p.on("error",()=>{S.jmsg="Impossible de joindre la partie (hôte hors ligne ?).";render()})}
+function joinRx(m){if(m.t==="full"){S.jmsg="Partie complète (4 joueurs maximum).";render();return}
+ if(m.t!=="g")return;const d=m.g,old=S.game&&S.game.id===d.id?S.game:null,own=old&&old.players.find(p=>p.pid===ME);
+ S.courses[d.course.id]=S.courses[d.course.id]||d.course;S.course=d.course.id;
+ S.game={id:d.id,nh:d.nh,room:d.room,joined:1,players:d.players,hole:old?old.hole:0};
+ const np=S.game.players.find(p=>p.pid===ME);if(own&&np){np.s=own.s;np.t=own.t}
+ S.join=null;S.jmsg="";if(!old)S.tab="card";watch();save();refresh()}
+function joinUI(){const ix=index();
+ return `<h1>Rejoindre la partie</h1><div class="card"><div class="row"><div><label>Ton prénom</label><input id="jn" value="${esc(S.mn||"")}"></div>
+ <div><label>Ton index</label><input id="jh" type="number" step="0.1" value="${S.mh!=null?S.mh:(ix===null?0:ix)}"></div></div>
+ <p class="mut">${ix===null?"Ton index se calcule dans l'onglet Index de ton propre téléphone.":"Index repris de ton historique sur ce téléphone."}</p></div>
+ <button class="big" onclick="joinGame()">Rejoindre</button>${S.jmsg?`<p class="mut">${S.jmsg}</p>`:""}<button class="ghost" onclick="S.join=null;render()">Annuler</button>`}
+function endGame(){const g=S.game;if(g.players.some(p=>p.s.some(x=>x))&&!S.history.some(h=>h.id===String(g.id))&&confirm("Enregistrer la partie dans ton historique avant de quitter ?")&&!saveGame())return;if(!confirm("Terminer la partie ?"))return;unwatch();if(NET){try{NET.peer.destroy()}catch(e){}NET=null}S.game=null;S.pending=null;save();render()}
 
 /* ---------- Partie ---------- */
-const NH=()=>S.game?S.game.nh:18;
 function startGame(){const c=C(),nh=c.holes.length,tl=teeList();
- S.game={id:Date.now(),nh,players:S.setup.map(p=>({...p,t:tl.includes(p.t)?p.t:(tl.includes("Jaune")?"Jaune":tl[0]),s:Array(nh).fill(0)})),hole:0};
- S.tab="card";watch();save();render()}
-function bump(pi,d){const g=S.game,p=g.players[pi];p.s[g.hole]=Math.max(0,p.s[g.hole]+d);save()}
+ S.game={id:Date.now(),room:"fw"+Math.random().toString(36).slice(2,10),nh,players:S.setup.map((p,i)=>({...p,pid:i?undefined:ME,t:tl.includes(p.t)?p.t:(tl.includes("Jaune")?"Jaune":tl[0]),s:Array(nh).fill(0)})),hole:0};
+ S.tab="card";watch();save();render();loadEl(c).then(()=>refresh()).catch(()=>{})}
+function bump(pi,d){const g=S.game,p=g.players[pi];p.s[g.hole]=Math.max(0,p.s[g.hole]+d);save();push()}
+function cycTee(i){const p=S.game.players[i],tl=teeList();p.t=tl[(tl.indexOf(p.t)+1)%tl.length];save();push();render()}
 function nextHole(){const g=S.game;if(g.hole<g.nh-1)g.hole++;else S.tab="sheet";S.pending=null;save();render();$("m").scrollTop=0}
 function recv(p,h){const x=Math.round(p.h);return Math.floor(x/18)+(hIdx(h)<x%18?1:0)}
 function tot(p){let g=0,pr=0,sf=0;p.s.forEach((s,h)=>{if(s){g+=s;pr+=par(h);sf+=Math.max(0,2+par(h)+recv(p,h)-s)}});return{g,par:pr,sf}}
 function setup(){const c=C();
- if(!c)return `<h1>1. Ton golf</h1><p class="mut" style="margin-top:-6px">Choisis le domaine : pars, distances, départs et vue 3D s'adaptent au parcours.</p>${crsSearch()}`;
- const tl=teeList();
- return `<h1>2. Les joueurs</h1><div class="card"><div class="pl" style="padding-top:0"><div><b>${esc(c.name)}</b><div class="mut">${c.holes.length} trous · ${tl.length===4&&!c.tees.length?"départs standard":"départs : "+tl.join(", ")}</div></div><button class="sm" style="padding:8px 12px" onclick="S.course=null;save();render()">Changer</button></div>
- ${S.setup.map((p,i)=>`<div class="row" style="grid-template-columns:2fr 1fr 1.3fr"><div><label>Joueur ${i+1}</label><input value="${esc(p.n)}" onchange="S.setup[${i}].n=this.value"></div>
+ if(!c)return `<div class="hero"><div class="brand">FAIRWAY</div><div class="big2">Ton golf</div></div><p class="mut" style="margin-top:-6px">Choisis le domaine : pars, distances, départs, dénivelé et vue 3D s'adaptent au parcours.</p>${crsSearch()}`;
+ const tl=teeList(),ix=index();if(!S.setup[0].h&&ix!==null)S.setup[0].h=ix;
+ return `<div class="hero"><div class="brand">FAIRWAY</div><div class="big2">Les joueurs</div></div><div class="card"><div class="pl" style="padding-top:0"><div><b>${esc(c.name)}</b><div class="mut">${c.holes.length} trous · ${!c.tees.length?"départs standard":"départs : "+tl.join(", ")}</div></div><button class="sm" style="padding:8px 12px" onclick="S.course=null;save();render()">Changer</button></div>
+ ${S.setup.map((p,i)=>`<div class="row" style="grid-template-columns:2fr 1fr 1.3fr"><div><label>${i?"Joueur "+(i+1)+" (sans téléphone)":"Toi"}</label><input value="${esc(p.n)}" onchange="S.setup[${i}].n=this.value"></div>
  <div><label>Index</label><input type="number" step="0.1" value="${p.h}" onchange="S.setup[${i}].h=+this.value"></div>
  <div><label>Départ</label><select onchange="S.setup[${i}].t=this.value">${tl.map(t=>`<option ${(tl.includes(p.t)?p.t:"Jaune")===t?"selected":""}>${t}</option>`).join("")}</select></div></div>`).join("")}
- ${S.setup.length<4?`<button class="ghost" onclick="S.setup.push({n:'Joueur ${S.setup.length+1}',h:0,t:'Jaune'});render()">+ Ajouter un joueur (4 max)</button>`:""}</div>
+ ${S.setup.length<4?`<button class="ghost" onclick="S.setup.push({n:'Joueur ${S.setup.length+1}',h:0,t:'Jaune'});render()">+ Ajouter un joueur sur ce téléphone</button>`:""}
+ <p class="mut">Les amis avec leur smartphone s'ajoutent ensuite par QR code, depuis la partie.</p></div>
  <button class="big" onclick="startGame()">Commencer le trou 1</button>
  <div style="margin-top:14px">${holesCard()}</div>`}
-function hole(){const g=S.game,h=g.hole,c=C(),H=c.holes[h],p0=g.players[0],L=hlen(h,p0.t);
+function hole(){const g=S.game,h=g.hole,c=C(),H=c.holes[h],p0=P(),L=hlen(h,p0.t),ed=H.el?Math.round(H.el[1]-H.el[0]):null,me=mi();
  return `<div class="hd"><button onclick="S.game.hole=Math.max(0,S.game.hole-1);save();render()">‹</button>
- <div style="text-align:center"><h1 style="margin:0">Trou ${h+1}</h1><span class="mut">${esc(c.name)} · par ${par(h)}${L?" · "+L+" m":""} <span class="dot" style="background:${TC[p0.t]};margin:0 0 0 4px"></span></span></div>
+ <div style="text-align:center"><h1 style="margin:0">Trou ${h+1}</h1><span class="mut">${esc(c.name)} · par ${par(h)}${L?" · "+L+" m":""}${ed!==null?" · "+(ed>=0?"▲ +"+ed:"▼ "+Math.abs(ed))+" m":""}</span></div>
  <button onclick="S.game.hole=Math.min(${g.nh-1},S.game.hole+1);save();render()">›</button></div>
  ${H.pts?`<div style="display:flex;gap:8px;margin-top:12px"><button class="sm on" style="flex:1;padding:12px" onclick="openMap(${h})">Vue 3D du trou</button><button class="sm" style="flex:1;padding:12px" onclick="openMap(${h},1)">3D du golf</button></div>`:""}
+ ${g.joined?`<p class="mut" style="margin:10px 0 0">Partie partagée · ${g.players.length} joueur(s) connecté(s)</p>`:`<button class="sm" style="width:100%;margin-top:8px;padding:10px" onclick="invite()">Inviter des joueurs (QR code)</button>`}
  <div class="card" id="cad" style="margin-top:12px"></div>
  ${S.pending?`<div class="card"><b>${S.pending.club}</b> : frappe enregistrée.<br><span class="mut">Va jusqu'à ta balle, puis valide : le coup s'ajoute à ta carte.</span></div>
   <button class="big alt" onclick="finish()">Je suis sur la balle : valider</button>
   <button class="ghost" onclick="S.pending=null;save();render()">Annuler ce coup</button>`
- :`<div class="mut" style="margin-bottom:6px">Club pour le coup ${(p0.s[h]||0)+1} de ${esc(p0.n)}</div>
+ :`<div class="mut" style="margin-bottom:6px">Club pour ton coup ${(p0.s[h]||0)+1}</div>
   <div class="grid">${CLUBS.map(k=>`<button class="club ${S.club===k?"on":""}" onclick="S.club='${k}';render()">${k}<br><span class="mut" style="font-size:11px">${k==="Putter"?"&nbsp;":(avg(k)?"":"~")+cd(k)+" m"}</span></button>`).join("")}</div>
   <button class="big" onclick="start()">Je frappe avec ${S.club}</button>`}
- <div class="card" style="margin-top:14px">${g.players.map((p,i)=>`<div class="pl"><div><b>${esc(p.n)}</b><div class="mut"><span class="dot" style="background:${TC[p.t]}"></span>${p.t} · ${p.s[h]?(p.s[h]-par(h)>0?"+":"")+(p.s[h]-par(h))+" / par":"—"}</div></div>
- <div style="display:flex;align-items:center;gap:6px"><button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},-1);render()">−</button><div class="num" style="font-size:38px;min-width:44px">${p.s[h]||"·"}</div><button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},1);render()">+</button></div></div>`).join("")}
- <div class="mut">Les coups validés avec un club remplissent la carte de ${esc(p0.n)} ; les autres joueurs se saisissent avec + / −.</div></div>
+ <div class="card" style="margin-top:14px">${g.players.map((p,i)=>{const ed=!p.pid||p.pid===ME;return `<div class="pl"><div><b>${esc(p.n)}${i===me?" (toi)":""}</b><div class="mut">${ed?`<button class="sm" style="padding:1px 8px;font-size:12px;margin-right:4px" onclick="cycTee(${i})"><span class="dot" style="background:${TC[p.t]};margin:0 4px 0 0"></span>${p.t}</button>`:`<span class="dot" style="background:${TC[p.t]}"></span>${p.t}`}${p.s[h]?" · "+(p.s[h]-par(h)>0?"+":"")+(p.s[h]-par(h))+" / par":""}</div></div>
+ <div style="display:flex;align-items:center;gap:6px">${ed?`<button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},-1);render()">−</button>`:""}<div class="num" style="font-size:38px;min-width:44px">${p.s[h]||"·"}</div>${ed?`<button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},1);render()">+</button>`:""}</div></div>`}).join("")}
+ <div class="mut">Tes coups validés avec un club remplissent ta carte. Les joueurs connectés saisissent la leur sur leur téléphone.</div></div>
  <div class="card">${g.players.map(p=>{const t=tot(p);return `<div class="pl"><b>${esc(p.n)}</b><span>${t.g} coups (${t.g-t.par>0?"+":""}${t.g-t.par}) · <b>${t.sf} pts</b></span></div>`}).join("")}</div>
  <button class="big alt" onclick="nextHole()">${h<g.nh-1?"Trou suivant ›":"Voir la carte finale"}</button>
- <button class="ghost" onclick="if(confirm('Terminer la partie ?')){unwatch();S.game=null;save();render()}">Terminer la partie</button>`}
+ <button class="ghost" onclick="endGame()">Terminer la partie</button>`}
 function sheet(){const g=S.game,n=g.nh;
  return `<h1>Carte</h1><p class="mut" style="margin-top:-6px">${esc(C().name)}</p><div class="card" style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th>${g.players.map(p=>`<th><span class="dot" style="background:${TC[p.t]}"></span>${esc(p.n)}</th>`).join("")}</tr>
  ${Array.from({length:n},(_,h)=>`<tr><td>${h+1}</td><td>${par(h)}</td>${g.players.map(p=>`<td>${p.s[h]||"–"}</td>`).join("")}</tr>`).join("")}
  <tr><th>Total</th><th>${Array.from({length:n},(_,h)=>par(h)).reduce((a,b)=>a+b)}</th>${g.players.map(p=>`<th>${tot(p).g}</th>`).join("")}</tr>
  <tr><th>Stableford</th><th></th>${g.players.map(p=>`<th>${tot(p).sf}</th>`).join("")}</tr></table></div>
- <button class="big alt" onclick="S.tab='card';render()">Retour au trou ${g.hole+1}</button>`}
+ <button class="big alt" onclick="S.tab='card';render()">Retour au trou ${g.hole+1}</button>
+ <button class="big" onclick="if(saveGame())alert('Partie enregistrée.')">Enregistrer la partie</button>
+ <button class="big alt" onclick="S.pre=tot(P()).g;S.tab='idx';render()">Ajouter ce tour à mon index</button>`}
 
 /* ---------- Index (WHS simplifié) ---------- */
 const diff=r=>Math.round(113/r.slope*(r.score-r.cr)*10)/10;
@@ -241,33 +330,102 @@ function addRound(){const score=+$("sc").value,cr=+$("cr").value,slope=+$("sl").
  if(!score||!cr||!slope){alert("Renseigne le score, le Course Rating et le Slope.");return}
  S.rounds.push({score,cr,slope,date:$("dt").value});save();render()}
 
+/* ---------- Compte, sauvegarde, historique ---------- */
+const sbc=async()=>{if(!SB_URL)return null;if(SB)return SB;await loadJS(SBJS);SB=supabase.createClient(SB_URL,SB_KEY);return SB};
+let SB=null,SYT=null;
+const sched=()=>{clearTimeout(SYT);SYT=setTimeout(syncNow,2500)};
+const mergeBy=(a,b,k)=>{const m=new Map();a.concat(b).forEach(x=>{if(!m.has(k(x)))m.set(k(x),x)});return[...m.values()]};
+async function syncNow(){if(!SB_URL||!navigator.onLine||!S.user)return;S.sy="Synchronisation…";
+ try{const c=await sbc(),uid=S.user.id;
+  const en=await c.from("entitlements").select("premium").eq("user_id",uid).maybeSingle();S.premium=!!(en.data&&en.data.premium);
+  const bk=await c.from("backups").select("data").eq("user_id",uid).maybeSingle();
+  if(bk.data){const d=bk.data.data||{};
+   S.rounds=mergeBy(S.rounds,d.rounds||[],r=>r.date+"|"+r.score+"|"+r.cr+"|"+r.slope);
+   S.shots=mergeBy(S.shots,d.shots||[],x=>x.t+"|"+x.club);
+   if(d.bag&&(d.bagAt||0)>(S.bagAt||0)){S.bag=d.bag;S.bagAt=d.bagAt;syncClubs()}}
+  await c.from("backups").upsert({user_id:uid,data:{rounds:S.rounds,shots:S.shots.slice(-3000),bag:S.bag,bagAt:S.bagAt||0},updated_at:new Date().toISOString()});
+  for(const id of S.delq||[])await c.from("games").delete().eq("user_id",uid).eq("local_id",id);S.delq=[];
+  const gs=await c.from("games").select("local_id,data").eq("user_id",uid),have=new Set((gs.data||[]).map(x=>x.local_id));
+  (gs.data||[]).forEach(x=>{if(!S.history.some(h=>h.id===x.local_id))S.history.push(x.data)});
+  S.amsg="";
+  for(const h of S.history)if(!have.has(h.id)){const r=await c.from("games").insert({user_id:uid,local_id:h.id,data:h});
+   if(r.error){S.amsg="Limite du plan gratuit atteinte : passe en Premium pour sauvegarder plus de parties.";break}}
+  S.sy="Sauvegardé à "+new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
+ catch(e){S.sy="Synchronisation impossible (réseau ?)."}
+ save();if(S.tab==="me"||S.tab==="dist")refresh()}
+async function auth(kind){const em=$("em").value.trim(),pw=$("pw").value;S.amsg="…";render();
+ try{const c=await sbc();let r;
+  if(kind==="up"){r=await c.auth.signUp({email:em,password:pw,options:{emailRedirectTo:location.origin+location.pathname}});S.amsg=r.error?r.error.message:(r.data.session?"":"Compte créé. Vérifie ton e-mail pour confirmer, puis connecte-toi.")}
+  else if(kind==="in"){r=await c.auth.signInWithPassword({email:em,password:pw});S.amsg=r.error?"Identifiants incorrects.":""}
+  else{r=await c.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});S.amsg=r.error?r.error.message:"E-mail de réinitialisation envoyé."}
+  if(r.data&&r.data.session){S.user={id:r.data.session.user.id,email:r.data.session.user.email};S.amsg="";save();syncNow()}}
+ catch(e){S.amsg="Connexion internet nécessaire."}render()}
+async function logout(){try{await(await sbc()).auth.signOut()}catch(e){}S.user=null;S.premium=false;S.sy="";save();render()}
+async function initAuth(){if(!SB_URL)return;try{const c=await sbc();
+ c.auth.onAuthStateChange((ev,ss)=>{if(ev==="PASSWORD_RECOVERY"){const p=prompt("Nouveau mot de passe (8 caractères minimum) :");if(p)c.auth.updateUser({password:p}).then(r=>alert(r.error?r.error.message:"Mot de passe mis à jour."))}
+  if(ss)S.user={id:ss.user.id,email:ss.user.email};else if(ev==="SIGNED_OUT")S.user=null});
+ const{data}=await c.auth.getSession();if(data.session){S.user={id:data.session.user.id,email:data.session.user.email};syncNow()}}catch(e){}}
+function upgrade(){if(!S.user){S.amsg="Crée un compte ou connecte-toi pour passer en Premium.";render();return}
+ if(!PAY_URL){alert("Lien de paiement non configuré (voir README).");return}
+ location.href=PAY_URL+"?client_reference_id="+encodeURIComponent(S.user.id)+"&prefilled_email="+encodeURIComponent(S.user.email)}
+function saveGame(){const g=S.game,p=P();
+ if(S.history.some(h=>h.id===String(g.id)))return true;
+ if(!S.premium&&S.history.length>=25){if(confirm("Plan gratuit : 25 parties enregistrées atteintes. Passer en Premium pour un historique illimité ?")){S.tab="me";render()}return false}
+ const t=tot(p);S.history.push({id:String(g.id),date:new Date().toISOString().slice(0,10),course:C().name,cid:C().id,nh:g.nh,par:t.par,me:p.n,tee:p.t,g:t.g,sf:t.sf,players:g.players.map(x=>({n:x.n,t:x.t,h:x.h,s:x.s}))});
+ save();sched();return true}
+function delGame(id){if(!confirm("Supprimer cette partie ?"))return;S.history=S.history.filter(h=>h.id!==id);if(S.user)S.delq.push(id);save();sched();render()}
+function accountCard(){
+ if(!SB_URL)return `<div class="card"><b>Compte</b><p class="mut">Les comptes ne sont pas encore activés sur cette installation (voir le README, étape Supabase). Tes données restent sur ce téléphone.</p></div>`;
+ if(S.user)return `<div class="card"><b>Compte sécurisé</b><p class="mut">Tes parties, ton index et ton sac sont sauvegardés et suivent ton compte sur tous tes appareils.</p><button class="sm on" style="width:100%;padding:12px" onclick="syncNow()">Synchroniser maintenant</button><button class="ghost" onclick="logout()">Se déconnecter</button></div>`;
+ return `<div class="card"><b>Crée ton compte</b><div style="margin:10px 0"><label>E-mail</label><input id="em" type="email" autocomplete="email"></div><div><label>Mot de passe (8 caractères minimum)</label><input id="pw" type="password" autocomplete="current-password"></div>
+ ${S.amsg?`<p class="mut">${esc(S.amsg)}</p>`:""}<button class="big" onclick="auth('up')">Créer mon compte</button><button class="big alt" style="margin-top:8px;padding:14px" onclick="auth('in')">Se connecter</button><button class="ghost" onclick="auth('rs')">Mot de passe oublié</button></div>`}
+function profil(){const n=S.history.length,H=S.history.slice().sort((a,b)=>b.date.localeCompare(a.date));
+ return `<div class="hero"><div class="brand">PROFIL</div>${S.user?`<div class="big2" style="font-size:20px;word-break:break-all">${esc(S.user.email)}</div><div class="mut">${esc(S.sy||"")}</div>`:`<div class="big2" style="font-size:24px">Ton golf, sauvegardé</div><div class="mut">Parties, index et sac protégés par un compte.</div>`}</div>
+ ${accountCard()}
+ <div class="card"><b>Ton offre</b><span class="pill">${S.premium?"Premium":"Gratuit"}</span>
+ ${S.premium?`<p class="mut">Parties illimitées et sans publicité. Merci !</p>`:`<div class="bar"><i style="width:${Math.min(100,n/25*100)}%"></i></div><div class="mut">${n} / 25 parties enregistrées</div>
+ ${S.user&&S.amsg?`<p class="mut">${esc(S.amsg)}</p>`:""}<p style="margin:12px 0 0">Premium : historique illimité et sans publicité, <b>${PRICE}</b>.</p><button class="big" onclick="upgrade()">Passer Premium</button><button class="ghost" onclick="syncNow()">J'ai payé : actualiser</button>`}</div>
+ <div class="card"><b>Historique</b>${H.length?H.map(h=>`<div class="pl"><div><b>${esc(h.course)}</b><div class="mut">${h.date} · ${esc(h.me)}</div></div><div style="text-align:right"><span class="gold">${h.g} coups · ${h.sf} pts</span> <button class="ghost" style="width:auto;padding:4px 8px;display:inline" onclick="delGame('${h.id}')">✕</button></div></div>`).join(""):`<p class="mut">Aucune partie enregistrée. Enregistre-les depuis l'onglet Carte.</p>`}</div>`}
+
+/* ---------- Sac & matériel ---------- */
+function bagSave(){S.bagAt=Date.now();syncClubs();save();sched()}
+function togClub(i){const c=S.bag[i];if(!c.in&&S.bag.filter(x=>x.in).length>=14){alert("Règle du golf : 14 clubs maximum dans le sac.");return}c.in=c.in?0:1;bagSave();render()}
+function addClub(){const n=prompt("Nom du club (ex. Fer 3, Wedge 52°) :");if(!n||!n.trim())return;S.bag.push({n:n.trim(),in:S.bag.filter(x=>x.in).length<14?1:0});S.edit=S.bag.length-1;bagSave();render()}
+function delClub(i){if(confirm("Supprimer ce club du sac ?")){S.bag.splice(i,1);S.edit=-1;bagSave();render()}}
+function editForm(i){const c=S.bag[i],f=(k,l,ph)=>`<div><label>${l}</label><input value="${esc(c[k]||"")}" placeholder="${ph}" oninput="S.bag[${i}].${k}=this.value;bagSave()"></div>`;
+ return `<div style="margin-top:12px"><div class="row">${f("b","Marque","Titleist")}${f("m","Modèle","T100")}</div><div class="row">${f("l","Loft (°)","34")}${f("s","Shaft / flex","Stiff")}</div>${f("k","Notes","Année, lie angle…")}<button class="ghost" onclick="delClub(${i})">Supprimer ce club</button></div>`}
+function bagUI(){const n=S.bag.filter(c=>c.in).length,st={};S.shots.forEach(s=>(st[s.club]=st[s.club]||[]).push(s.d));
+ return `<div class="hero"><div class="brand">MON SAC</div><div class="big2">${n}<span>/ 14 clubs</span></div><div class="mut">Matériel et distances réelles. Le caddie n'utilise que les clubs de ton sac.</div></div>
+ ${S.bag.map((c,i)=>{const a=st[c.n],av=a?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null,inf=[c.b,c.m,c.l?c.l+"°":"",c.s].filter(Boolean).map(esc).join(" · ");
+  return `<div class="card ${c.in?"":"off"}"><div class="pl" style="border:0;padding:0"><div><b style="font-size:17px">${esc(c.n)}</b><div class="mut">${inf||"Matériel non renseigné"}</div></div>
+  <div style="text-align:right"><div class="gold" style="font-size:22px;font-family:var(--serif)">${av?av+" m":"–"}</div><div class="mut">${a?a.length+" coups · max "+Math.max(...a)+" m":"aucun coup"}</div></div></div>
+  <div style="display:flex;gap:8px;margin-top:10px"><button class="sm" style="flex:1;padding:9px" onclick="S.edit=${S.edit===i?-1:i};render()">${S.edit===i?"Fermer":"Matériel"}</button><button class="sm ${c.in?"on":""}" style="flex:1;padding:9px" onclick="togClub(${i})">${c.in?"Dans le sac":"Hors du sac"}</button></div>${S.edit===i?editForm(i):""}</div>`}).join("")}
+ <button class="big alt" onclick="addClub()">+ Ajouter un club</button>
+ ${!S.game?`<details class="card" style="margin-top:14px"><summary><b>Entraînement libre</b></summary>${S.pending?`<p><b>${S.pending.club}</b> : frappe enregistrée.</p><button class="big alt" onclick="finish()">Je suis sur la balle : valider</button><button class="ghost" onclick="S.pending=null;save();render()">Annuler</button>`
+  :`<div class="grid" style="margin-top:10px">${CLUBS.map(c=>`<button class="club ${S.club===c?"on":""}" onclick="S.club='${c}';render()">${c}</button>`).join("")}</div><button class="big" onclick="start()">Je frappe avec ${S.club}</button>`}</details>`:""}`}
+
 /* ---------- Rendu ---------- */
+const IC={card:'<path d="M6 21V4M6 4h11l-3 4 3 4H6"/>',sheet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',dist:'<path d="M7 9h10l1 12H6zM9 9V6a3 3 0 0 1 6 0v3"/>',idx:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',me:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'};
 function render(){
  $("ad").style.display=S.premium?"none":"flex";
- $("nav").innerHTML=TABS.map(([k,l])=>`<button class="${S.tab===k?"on":""}" onclick="S.tab='${k}';render()">${l}</button>`).join("");
+ $("nav").innerHTML=TABS.map(([k,l])=>`<button class="${S.tab===k?"on":""}" onclick="S.tab='${k}';render()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>${l}</button>`).join("");
+ if(!CLUBS.includes(S.club))S.club=CLUBS[0]||"Driver";
  const m=$("m");
- if(S.tab==="card")m.innerHTML=!S.game?setup():hole();
+ if(S.tab==="card")m.innerHTML=S.join?joinUI():!S.game?setup():hole();
  if(S.tab==="sheet")m.innerHTML=S.game?sheet():`<h1>Carte</h1><p class="mut">Aucune partie en cours. Lance-en une dans l'onglet Jouer.</p>`;
- if(S.tab==="dist"){
-  const st={};S.shots.forEach(s=>(st[s.club]=st[s.club]||[]).push(s.d));
-  const rows=CLUBS.filter(c=>st[c]).map(c=>{const a=st[c];return `<tr><td>${c}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)} m</td><td>${Math.max(...a)} m</td><td>${a.length}</td></tr>`}).join("");
-  m.innerHTML=`<h1>Mon sac</h1><p class="mut" style="margin-top:-6px">Tes distances réelles, alimentées à chaque coup joué. Le caddie s'en sert pour te conseiller.</p>
-  ${S.pending&&!S.game?`<div class="card"><b>${S.pending.club}</b> : frappe enregistrée.</div><button class="big alt" onclick="finish()">Je suis sur la balle : valider</button><button class="ghost" onclick="S.pending=null;save();render()">Annuler</button>`
-  :!S.game?`<div class="mut" style="margin-bottom:6px">Entraînement libre</div><div class="grid">${CLUBS.map(c=>`<button class="club ${S.club===c?"on":""}" onclick="S.club='${c}';render()">${c}</button>`).join("")}</div><button class="big" onclick="start()">Je frappe avec ${S.club}</button>`:""}
-  <div class="card" style="margin-top:14px">${rows?`<table><tr><th>Club</th><th>Moy.</th><th>Max</th><th>Coups</th></tr>${rows}</table>`:`<span class="mut">Aucun coup enregistré pour l'instant.</span>`}</div>`}
+ if(S.tab==="dist")m.innerHTML=bagUI();
+ if(S.tab==="me")m.innerHTML=profil();
  if(S.tab==="idx"){const ix=index();
-  m.innerHTML=`<h1>Index</h1><div class="card"><span class="mut">Ton index estimé</span><div class="num" style="text-align:left">${ix===null?"—":ix}</div>
-  <div class="mut">${ix===null?"Ajoute au moins 3 tours.":"Sur tes "+Math.min(20,S.rounds.length)+" derniers tours"}</div></div>
-  <div class="card"><div class="row"><div><label>Score brut ajusté</label><input id="sc" type="number" inputmode="numeric"></div><div><label>Course Rating</label><input id="cr" type="number" step="0.1" placeholder="71.2"></div></div>
+  m.innerHTML=`<div class="hero"><div class="brand">INDEX ESTIMÉ</div><div class="big2">${ix===null?"—":ix}</div><div class="mut">${ix===null?"Ajoute au moins 3 tours.":"Sur tes "+Math.min(20,S.rounds.length)+" derniers tours"}</div></div>
+  <div class="card"><div class="row"><div><label>Score brut ajusté</label><input id="sc" type="number" inputmode="numeric" value="${S.pre||""}"></div><div><label>Course Rating</label><input id="cr" type="number" step="0.1" placeholder="71.2"></div></div>
   <div class="row"><div><label>Slope</label><input id="sl" type="number" placeholder="130"></div><div><label>Date</label><input id="dt" type="date" value="${new Date().toISOString().slice(0,10)}"></div></div>
   <button class="big alt" style="padding:14px;margin-top:6px" onclick="addRound()">Enregistrer le tour</button></div>
   ${S.rounds.length?`<div class="card"><table><tr><th>Date</th><th>Score</th><th>Différentiel</th></tr>${S.rounds.slice().reverse().slice(0,20).map(r=>`<tr><td>${r.date}</td><td>${r.score}</td><td>${diff(r)}</td></tr>`).join("")}</table></div>`:""}`}
- if(S.tab==="pro")m.innerHTML=`<h1>Premium</h1><div class="card"><span class="pill">${S.premium?"Actif":"Gratuit"}</span>
-  <p>Retire la publicité pour <b>2,99 € / mois</b>. Résiliable à tout moment.</p>
-  <button class="big" onclick="S.premium=!S.premium;save();render()">${S.premium?"Désactiver (démo)":"S'abonner (démo)"}</button>
-  <p class="mut">Démo : à remplacer par un lien de paiement Stripe.</p></div>`;
  if(S.tab==="card"&&S.game)updCaddie();
 }
-render();if(S.game)watch();
+const JP=new URLSearchParams(location.search).get("join");
+if(JP){if(!(S.game&&S.game.room===JP)){S.join=JP;S.tab="card"}history.replaceState(null,"",location.pathname)}
+render();initAuth();window.addEventListener("online",()=>syncNow());
+if(S.game){watch();if(S.game.joined)connect(S.game.room);else if(S.game.inv)loadJS(PEER).then(host).catch(()=>{})}
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
