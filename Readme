@@ -1,0 +1,15 @@
+# Fairway – comptes, sauvegarde et Premium
+
+L'app marche sans rien configurer (données sur le téléphone). Pour activer comptes, sauvegarde et abonnement :
+
+1. **Supabase** (gratuit) : crée un projet sur supabase.com, région Europe. SQL Editor → colle `supabase/schema.sql` → Run.
+2. Project Settings → API : copie « Project URL » et la clé « anon public ». Colle-les dans `index.html`, dans `SB_URL` et `SB_KEY` (la clé anon est publique par conception ; la sécurité vient des règles RLS du SQL).
+3. Authentication → Providers → Email : garde « Confirm email » activé, mot de passe minimum 8 caractères. Authentication → URL Configuration : mets l'adresse GitHub Pages de ton app dans « Site URL » et « Redirect URLs ».
+4. **Stripe** : crée un produit avec abonnement mensuel, puis un « Payment Link » (page de confirmation : l'adresse de ton app). Colle son lien dans `PAY_URL`.
+5. Supabase → Edge Functions → nouvelle fonction `stripe-webhook`, colle `supabase/stripe-webhook.ts`, désactive « Verify JWT ». Ajoute les secrets `STRIPE_KEY` et `STRIPE_WHSEC`. Dans Stripe → Webhooks, ajoute l'URL de la fonction avec les événements `checkout.session.completed` et `customer.subscription.deleted`.
+6. Teste avec le mode test de Stripe avant de passer en production.
+
+## Avant de commercialiser
+- Politique de confidentialité, mentions légales, CGV et consentement RGPD (localisation, compte, publicité).
+- Prévoir la suppression du compte à la demande (RGPD).
+- Licences : voir la section précédente (OpenStreetMap, Esri, Open-Meteo usage commercial payant).
