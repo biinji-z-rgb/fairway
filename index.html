@@ -21,6 +21,7 @@ h1{font-family:Georgia,"Times New Roman",serif;font-size:26px;margin:0 0 12px}
 button{font-family:inherit;color:inherit}
 .club,.sm{padding:12px 0;border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;font:600 14px inherit;font-family:inherit}
 .club.on,.sm.on{background:var(--pine);color:#fff;border-color:var(--pine)}
+.club.on .mut{color:#cfe3d8}
 .big{width:100%;padding:18px;border:0;border-radius:14px;background:var(--ball);color:#12261f;font:700 18px inherit;font-family:inherit;margin-top:14px}
 .big.alt{background:var(--pine);color:#fff}
 .ghost{background:none;border:0;color:var(--mut);font:14px inherit;font-family:inherit;padding:10px;width:100%}
@@ -54,7 +55,7 @@ nav button.on{color:var(--fg);box-shadow:inset 0 3px 0 var(--ball)}
 <script>
 const CLUBS=["Driver","Bois 3","Bois 5","Hybride","Fer 4","Fer 5","Fer 6","Fer 7","Fer 8","Fer 9","PW","SW","LW","Putter"];
 const PARS=[4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5];
-const TEES=["Blanc","Jaune","Bleu","Rouge"],TC={Blanc:"#f2f2f2",Jaune:"#f0d000",Bleu:"#2a6fdb",Rouge:"#d64545"};
+const TEES=["Blanc","Jaune","Bleu","Rouge"],TC={Blanc:"#f2f2f2",Jaune:"#f0d000",Bleu:"#2a6fdb",Rouge:"#d64545",Noir:"#222",Orange:"#f08a24",Vert:"#2f9e44"};
 const ML="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/";
 const ESRI="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 const DEM="https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
@@ -62,7 +63,7 @@ let S={shots:[],rounds:[],premium:false,club:"Driver",pending:null,tab:"card",ga
  setup:[{n:"Moi",h:0,t:"Jaune"}],view:"hole",courses:{},course:null,found:[],msg:"",q:""};
 try{const r=localStorage.getItem("fw2");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
 const save=()=>{try{localStorage.setItem("fw2",JSON.stringify(S))}catch(e){}};
-const TABS=[["card","Carte"],["dist","Clubs"],["crs","Parcours"],["idx","Index"],["pro","Pro"]];
+const TABS=[["card","Jouer"],["sheet","Carte"],["dist","Sac"],["idx","Index"],["pro","Pro"]];
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
@@ -78,13 +79,16 @@ async function start(){let p=null;try{p=await gps()}catch(e){}S.pending={club:S.
 async function finish(){let d=null;
  if(S.pending.pos){try{d=Math.round(dist(S.pending.pos,await gps()))}catch(e){}}
  if(d===null){d=parseInt(prompt("GPS indisponible. Distance en mètres ?"));if(!(d>=0))return}
- S.shots.push({club:S.pending.club,d,t:Date.now()});if(S.game)bump(0,1);
+ S.shots.push({club:S.pending.club,d,g:S.game?S.game.id:0,h:S.game?S.game.hole:0,t:Date.now()});if(S.game)bump(0,1);
  S.pending=null;save();render()}
 
 /* ---------- Parcours (OpenStreetMap) ---------- */
 const C=()=>S.course&&S.courses[S.course];
 const par=h=>{const c=C();return(c&&c.holes[h]&&c.holes[h].par)||PARS[h]};
 const hIdx=h=>{const c=C();return c&&c.holes[h]&&c.holes[h].hcp?c.holes[h].hcp-1:h};
+const teeList=()=>{const c=C();return c&&c.tees&&c.tees.length?c.tees:TEES};
+const hlen=(h,t)=>{const c=C(),H=c&&c.holes[h];return H?((H.tees&&H.tees[t])||H.len):0};
+const CN={white:"Blanc",yellow:"Jaune",blue:"Bleu",red:"Rouge",black:"Noir",orange:"Orange",green:"Vert"};
 async function op(q){const r=await fetch("https://overpass-api.de/api/interpreter",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});
  if(!r.ok)throw 0;return(await r.json()).elements}
 function build(els){const H=[];
@@ -92,7 +96,15 @@ function build(els){const H=[];
   const r=parseInt(e.tags.ref);if(!r||r>18||(H[r-1]&&H[r-1].par))return;
   const pts=e.geometry.map(g=>[g.lat,g.lon]);let len=0;for(let i=1;i<pts.length;i++)len+=d2(pts[i-1],pts[i]);
   H[r-1]={ref:r,par:parseInt(e.tags.par)||null,hcp:parseInt(e.tags.handicap)||null,pts,len:Math.round(len)}});
- const n=H.length>0&&H.length<=9?9:18,o=[];for(let i=0;i<n;i++)o.push(H[i]||{ref:i+1,par:null,pts:null,len:0});return o}
+ const n=H.length>0&&H.length<=9?9:18,o=[];for(let i=0;i<n;i++)o.push(H[i]||{ref:i+1,par:null,pts:null,len:0});
+ const T=new Set();
+ els.filter(e=>e.tags&&e.tags.golf==="tee").forEach(e=>{
+  const col=CN[String(e.tags.colour||e.tags.tee||"").toLowerCase()];if(!col)return;
+  const g=e.geometry||(e.lat!=null?[{lat:e.lat,lon:e.lon}]:null);if(!g||!g.length)return;
+  const p=[g.reduce((s,x)=>s+x.lat,0)/g.length,g.reduce((s,x)=>s+x.lon,0)/g.length];
+  let bh=null,bd=150;o.forEach(x=>{if(x.pts){const d=d2(p,x.pts[0]);if(d<bd){bd=d;bh=x}}});
+  if(bh){bh.tees=bh.tees||{};bh.tees[col]=Math.round(d2(p,bh.pts[bh.pts.length-1]));T.add(col)}});
+ return{holes:o,tees:["Blanc","Jaune","Bleu","Rouge","Noir","Orange","Vert"].filter(t=>T.has(t))}}
 async function search(){if(!S.q.trim())return;S.msg="Recherche…";render();
  try{const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&countrycodes=fr&limit=10&accept-language=fr&q="+encodeURIComponent("golf "+S.q));
   const j=await r.json();
@@ -105,66 +117,119 @@ async function near(){S.msg="Localisation…";render();
   S.found=el.filter(e=>e.bounds&&e.tags&&e.tags.name).map(e=>({id:e.type[0]+e.id,name:e.tags.name,place:"",bb:[e.bounds.minlat,e.bounds.minlon,e.bounds.maxlat,e.bounds.maxlon]}));
   S.msg=S.found.length?"":"Aucun golf à moins de 25 km."}
  catch(e){S.msg="Position ou réseau indisponible."}render()}
-async function pick(i){const f=S.found[i];S.msg="Chargement du parcours…";render();
- try{const[s,w,n,e]=f.bb,m=.0004;
-  const el=await op(`[out:json][timeout:30];way["golf"="hole"](${s-m},${w-m},${n+m},${e+m});out geom tags;`);
-  S.courses[f.id]={id:f.id,name:f.name,holes:build(el)};S.course=f.id;S.found=[];S.msg="";save()}
+async function pick(i){const f=S.found[i];S.msg="Chargement du golf…";render();
+ try{const[s,w,n,e]=f.bb,m=.0004,box=`${s-m},${w-m},${n+m},${e+m}`;
+  const el=await op(`[out:json][timeout:30];(way["golf"="hole"](${box});nwr["golf"="tee"](${box}););out geom tags;`);
+  const r=build(el);S.courses[f.id]={id:f.id,name:f.name,holes:r.holes,tees:r.tees};S.course=f.id;S.found=[];S.msg="";save()}
  catch(e){S.msg="Chargement impossible (réseau ?)."}render()}
+function freeCourse(){S.courses._={id:"_",name:"Parcours libre",tees:[],holes:PARS.map((p,i)=>({ref:i+1,par:p,pts:null,len:0}))};S.course="_";save();render()}
 function cyc(i){const h=C().holes[i],p=par(i);h.par=p>=5?3:p+1;save();render()}
+function crsSearch(){const cs=Object.values(S.courses).filter(x=>x.id!=="_");
+ return `<div class="card"><div class="row" style="grid-template-columns:2fr 1fr"><input placeholder="Nom du golf ou ville" value="${esc(S.q)}" oninput="S.q=this.value"><button class="sm on" onclick="search()">Chercher</button></div>
+ <button class="ghost" onclick="near()">Golfs autour de moi</button>${S.msg?`<p class="mut">${S.msg}</p>`:""}
+ ${S.found.map((f,i)=>`<div class="pl"><div><b>${esc(f.name)}</b><div class="mut">${esc(f.place)}</div></div><button class="sm" style="padding:8px 12px" onclick="pick(${i})">Choisir</button></div>`).join("")}</div>
+ ${cs.length?`<div class="card"><span class="mut">Mes golfs (disponibles hors ligne)</span>${cs.map(x=>`<div class="pl"><b>${esc(x.name)}</b><button class="sm" style="padding:8px 12px" onclick="S.course='${x.id}';save();render()">Jouer</button></div>`).join("")}</div>`:""}
+ <button class="ghost" onclick="freeCourse()">Jouer sans golf (pars génériques)</button>
+ <p class="mut">Données © contributeurs OpenStreetMap, qualité variable selon les clubs.</p>`}
+function holesCard(){const c=C();
+ return `<details class="card"><summary><b>Pars et distances</b> <span class="mut">${c.holes.filter(h=>h.pts).length}/${c.holes.length} trous cartographiés</span></summary><div style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th><th>Distance</th></tr>
+ ${c.holes.map((h,i)=>`<tr><td>${h.ref}</td><td><button class="sm" style="padding:4px 12px" onclick="cyc(${i})">${par(i)}${h.par?"":"*"}</button></td><td>${h.tees?Object.entries(h.tees).map(([k,v])=>`<span class="dot" style="background:${TC[k]}"></span>${v}`).join(" "):h.len?h.len+" m":"–"}</td></tr>`).join("")}</table></div>
+ <p class="mut">* Par absent des données : touche pour le corriger.</p></details>`}
 
 /* ---------- Vue 3D ---------- */
 const loadML=()=>window.maplibregl?Promise.resolve():new Promise((ok,ko)=>{
  const l=document.createElement("link");l.rel="stylesheet";l.href=ML+"maplibre-gl.css";document.head.appendChild(l);
  const s=document.createElement("script");s.src=ML+"maplibre-gl.js";s.onload=ok;s.onerror=ko;document.head.appendChild(s)});
-let MP=null,WID=null;
-async function openMap(h){const H=C().holes[h];if(!H.pts)return;$("mp").hidden=false;$("mbar").textContent="Chargement de la vue 3D…";
+let MP=null;
+async function openMap(h,all){const c=C(),H=c.holes[h],hs=c.holes.filter(x=>x.pts);if(!hs.length)return;
+ $("mp").hidden=false;$("mbar").textContent="Chargement de la vue 3D…";
  try{await loadML()}catch(e){$("mbar").textContent="Une connexion est nécessaire pour la vue 3D.";return}
- const a=H.pts[0],b=H.pts[H.pts.length-1];
- MP=new maplibregl.Map({container:"mapc",center:[a[1]+(b[1]-a[1])*.45,a[0]+(b[0]-a[0])*.45],zoom:H.len<220?17.6:H.len<420?16.9:16.3,pitch:66,bearing:brg(a,b),maxPitch:80,
+ let center,zoom,pitch=66,bearing=0,a,b;
+ if(all||!H.pts){const P=hs.flatMap(x=>x.pts),la=P.map(p=>p[0]),lo=P.map(p=>p[1]),mnA=Math.min(...la),mxA=Math.max(...la),mnO=Math.min(...lo),mxO=Math.max(...lo);
+  center=[(mnO+mxO)/2,(mnA+mxA)/2];zoom=Math.max(13,16.5-Math.log2(d2([mnA,mnO],[mxA,mxO])/165));pitch=55}
+ else{a=H.pts[0];b=H.pts[H.pts.length-1];center=[a[1]+(b[1]-a[1])*.45,a[0]+(b[0]-a[0])*.45];zoom=H.len<220?17.6:H.len<420?16.9:16.3;bearing=brg(a,b)}
+ MP=new maplibregl.Map({container:"mapc",center,zoom,pitch,bearing,maxPitch:80,
   style:{version:8,sources:{sat:{type:"raster",tiles:[ESRI],tileSize:256,maxzoom:19,attribution:"Imagerie © Esri · Tracés © contributeurs OpenStreetMap"},
    dem:{type:"raster-dem",tiles:[DEM],encoding:"terrarium",tileSize:256,maxzoom:14}},
    layers:[{id:"sat",type:"raster",source:"sat"}],terrain:{source:"dem",exaggeration:1.4}}});
- MP.on("load",()=>{MP.addSource("l",{type:"geojson",data:{type:"Feature",geometry:{type:"LineString",coordinates:H.pts.map(p=>[p[1],p[0]])}}});
-  MP.addLayer({id:"l",type:"line",source:"l",paint:{"line-color":"#e6d24a","line-width":3,"line-dasharray":[2,2]}});
-  new maplibregl.Marker({color:"#ffffff"}).setLngLat([a[1],a[0]]).addTo(MP);
-  new maplibregl.Marker({color:"#d64545"}).setLngLat([b[1],b[0]]).addTo(MP)});
- $("mbar").innerHTML=`Trou ${H.ref} · par ${par(h)} · ≈ ${H.len} m<br><span id="dg">Position…</span>`;
- if(navigator.geolocation)WID=navigator.geolocation.watchPosition(p=>{const u={lat:p.coords.latitude,lng:p.coords.longitude};
-  $("dg").textContent="Distance du green : "+Math.round(dist(u,{lat:b[0],lng:b[1]}))+" m";
-  if(MP&&!MP.__u)MP.__u=new maplibregl.Marker({color:"#2a9df4"}).setLngLat([u.lng,u.lat]).addTo(MP);else if(MP)MP.__u.setLngLat([u.lng,u.lat])},
-  ()=>{$("dg").textContent="GPS indisponible"},{enableHighAccuracy:true})}
-function closeMap(){if(WID!=null)navigator.geolocation.clearWatch(WID);WID=null;if(MP)MP.remove();MP=null;$("mp").hidden=true}
+ const ln=x=>({type:"Feature",geometry:{type:"LineString",coordinates:x.pts.map(p=>[p[1],p[0]])}});
+ MP.on("load",()=>{
+  MP.addSource("all",{type:"geojson",data:{type:"FeatureCollection",features:(all||!H.pts?hs:[]).map(ln)}});
+  MP.addLayer({id:"all",type:"line",source:"all",paint:{"line-color":"#ffffff","line-width":2}});
+  if(H.pts){MP.addSource("cur",{type:"geojson",data:ln(H)});MP.addLayer({id:"cur",type:"line",source:"cur",paint:{"line-color":"#e6d24a","line-width":4,"line-dasharray":[2,1.5]}});
+   const e=H.pts[H.pts.length-1];new maplibregl.Marker({color:"#ffffff"}).setLngLat([H.pts[0][1],H.pts[0][0]]).addTo(MP);
+   new maplibregl.Marker({color:"#d64545"}).setLngLat([e[1],e[0]]).addTo(MP)}
+  onPos()});
+ $("mbar").innerHTML=`${esc(c.name)}${H.pts?" · Trou "+H.ref+" · par "+par(h)+" · ≈ "+H.len+" m":""}${S.game?'<br><span id="dg">Position…</span>':""}`;
+ if(S.game){watch();updCaddie()}}
+function closeMap(){if(MP)MP.remove();MP=null;$("mp").hidden=true}
+function onPos(){updCaddie();if(MP&&POS){if(!MP.__u)MP.__u=new maplibregl.Marker({color:"#2a9df4"}).setLngLat([POS.lng,POS.lat]).addTo(MP);else MP.__u.setLngLat([POS.lng,POS.lat])}}
 
-/* ---------- Carte de score ---------- */
+/* ---------- Caddie virtuel ---------- */
+const DEF={Driver:200,"Bois 3":180,"Bois 5":165,Hybride:150,"Fer 4":145,"Fer 5":135,"Fer 6":125,"Fer 7":115,"Fer 8":105,"Fer 9":95,PW:85,SW:65,LW:45};
+function avg(c){const a=S.shots.filter(s=>s.club===c).map(s=>s.d);return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):null}
+const cd=c=>avg(c)||DEF[c]||0;
+function rec(r){if(r<=12)return"Putter";let b=null,bd=1e9;
+ CLUBS.forEach(c=>{if(c==="Putter")return;const d=cd(c),e=Math.abs(d-r)+(d<r?8:0);if(e<bd){bd=e;b=c}});return b}
+let POS=null,WID=null;
+function watch(){if(WID!=null||!navigator.geolocation)return;
+ WID=navigator.geolocation.watchPosition(p=>{POS={lat:p.coords.latitude,lng:p.coords.longitude};onPos()},()=>{},{enableHighAccuracy:true})}
+function unwatch(){if(WID!=null&&navigator.geolocation)navigator.geolocation.clearWatch(WID);WID=null;POS=null}
+function remain(){const g=S.game,c=C(),H=c&&c.holes[g.hole];if(!H)return null;
+ if(POS&&H.pts){const e=H.pts[H.pts.length-1];return{r:Math.round(dist(POS,{lat:e[0],lng:e[1]})),gps:true}}
+ const L=hlen(g.hole,g.players[0].t);if(!L)return null;
+ return{r:Math.max(0,L-S.shots.filter(s=>s.g===g.id&&s.h===g.hole).reduce((a,s)=>a+s.d,0)),gps:false}}
+function updCaddie(){if(!S.game)return;const q=remain();let a,b;
+ if(!q){a="Pas de tracé pour ce trou : pas de distance au green.";b=""}
+ else{const c=rec(q.r);a=`<span style="font-size:30px;font-family:Georgia,serif">${q.r} m</span> du green <span class="mut">${q.gps?"(GPS)":"(estimé)"}</span>`;
+  b=`Caddie : <b>${c}</b>${c==="Putter"?"":" (ta moyenne : "+cd(c)+" m)"} <button class="sm on" style="padding:6px 12px;margin-left:6px" onclick="pickRec()">Prendre</button>`}
+ if($("cad"))$("cad").innerHTML=a+(b?"<br>"+b:"");
+ if($("dg"))$("dg").textContent=q?q.r+" m du green · conseil : "+rec(q.r):"Position…"}
+function pickRec(){const q=remain();if(q){S.club=rec(q.r);render()}}
+
+/* ---------- Partie ---------- */
 const NH=()=>S.game?S.game.nh:18;
-function startGame(){const c=C(),nh=c?c.holes.length:18;
- S.game={nh,players:S.setup.map(p=>({...p,t:p.t||"Jaune",s:Array(nh).fill(0)})),hole:0};S.view="hole";save();render()}
+function startGame(){const c=C(),nh=c.holes.length,tl=teeList();
+ S.game={id:Date.now(),nh,players:S.setup.map(p=>({...p,t:tl.includes(p.t)?p.t:(tl.includes("Jaune")?"Jaune":tl[0]),s:Array(nh).fill(0)})),hole:0};
+ S.tab="card";watch();save();render()}
 function bump(pi,d){const g=S.game,p=g.players[pi];p.s[g.hole]=Math.max(0,p.s[g.hole]+d);save()}
+function nextHole(){const g=S.game;if(g.hole<g.nh-1)g.hole++;else S.tab="sheet";S.pending=null;save();render();$("m").scrollTop=0}
 function recv(p,h){const x=Math.round(p.h);return Math.floor(x/18)+(hIdx(h)<x%18?1:0)}
 function tot(p){let g=0,pr=0,sf=0;p.s.forEach((s,h)=>{if(s){g+=s;pr+=par(h);sf+=Math.max(0,2+par(h)+recv(p,h)-s)}});return{g,par:pr,sf}}
 function setup(){const c=C();
- return `<h1>Nouvelle partie</h1><p class="mut" style="margin-top:-6px">${c?"Parcours : <b>"+esc(c.name)+"</b>":"Aucun parcours choisi : pars génériques. Choisis-en un dans l'onglet Parcours."}</p>
- <div class="card">${S.setup.map((p,i)=>`<div class="row" style="grid-template-columns:2fr 1fr 1.3fr"><div><label>Joueur ${i+1}</label><input value="${esc(p.n)}" onchange="S.setup[${i}].n=this.value"></div>
+ if(!c)return `<h1>1. Ton golf</h1><p class="mut" style="margin-top:-6px">Choisis le domaine : pars, distances, départs et vue 3D s'adaptent au parcours.</p>${crsSearch()}`;
+ const tl=teeList();
+ return `<h1>2. Les joueurs</h1><div class="card"><div class="pl" style="padding-top:0"><div><b>${esc(c.name)}</b><div class="mut">${c.holes.length} trous · ${tl.length===4&&!c.tees.length?"départs standard":"départs : "+tl.join(", ")}</div></div><button class="sm" style="padding:8px 12px" onclick="S.course=null;save();render()">Changer</button></div>
+ ${S.setup.map((p,i)=>`<div class="row" style="grid-template-columns:2fr 1fr 1.3fr"><div><label>Joueur ${i+1}</label><input value="${esc(p.n)}" onchange="S.setup[${i}].n=this.value"></div>
  <div><label>Index</label><input type="number" step="0.1" value="${p.h}" onchange="S.setup[${i}].h=+this.value"></div>
- <div><label>Départ</label><select onchange="S.setup[${i}].t=this.value">${TEES.map(t=>`<option ${(p.t||"Jaune")===t?"selected":""}>${t}</option>`).join("")}</select></div></div>`).join("")}
+ <div><label>Départ</label><select onchange="S.setup[${i}].t=this.value">${tl.map(t=>`<option ${(tl.includes(p.t)?p.t:"Jaune")===t?"selected":""}>${t}</option>`).join("")}</select></div></div>`).join("")}
  ${S.setup.length<4?`<button class="ghost" onclick="S.setup.push({n:'Joueur ${S.setup.length+1}',h:0,t:'Jaune'});render()">+ Ajouter un joueur (4 max)</button>`:""}</div>
- <button class="big" onclick="startGame()">Commencer le trou 1</button>`}
-function hole(){const g=S.game,h=g.hole,c=C(),H=c&&c.holes[h];
+ <button class="big" onclick="startGame()">Commencer le trou 1</button>
+ <div style="margin-top:14px">${holesCard()}</div>`}
+function hole(){const g=S.game,h=g.hole,c=C(),H=c.holes[h],p0=g.players[0],L=hlen(h,p0.t);
  return `<div class="hd"><button onclick="S.game.hole=Math.max(0,S.game.hole-1);save();render()">‹</button>
- <div style="text-align:center"><h1 style="margin:0">Trou ${h+1}</h1><span class="mut">Par ${par(h)}${H&&H.len?" · ≈ "+H.len+" m":""}</span></div>
+ <div style="text-align:center"><h1 style="margin:0">Trou ${h+1}</h1><span class="mut">${esc(c.name)} · par ${par(h)}${L?" · "+L+" m":""} <span class="dot" style="background:${TC[p0.t]};margin:0 0 0 4px"></span></span></div>
  <button onclick="S.game.hole=Math.min(${g.nh-1},S.game.hole+1);save();render()">›</button></div>
- ${H&&H.pts?`<button class="big alt" style="margin-top:12px;padding:12px" onclick="openMap(${h})">Vue 3D du trou</button>`:""}
+ ${H.pts?`<div style="display:flex;gap:8px;margin-top:12px"><button class="sm on" style="flex:1;padding:12px" onclick="openMap(${h})">Vue 3D du trou</button><button class="sm" style="flex:1;padding:12px" onclick="openMap(${h},1)">3D du golf</button></div>`:""}
+ <div class="card" id="cad" style="margin-top:12px"></div>
+ ${S.pending?`<div class="card"><b>${S.pending.club}</b> : frappe enregistrée.<br><span class="mut">Va jusqu'à ta balle, puis valide : le coup s'ajoute à ta carte.</span></div>
+  <button class="big alt" onclick="finish()">Je suis sur la balle : valider</button>
+  <button class="ghost" onclick="S.pending=null;save();render()">Annuler ce coup</button>`
+ :`<div class="mut" style="margin-bottom:6px">Club pour le coup ${(p0.s[h]||0)+1} de ${esc(p0.n)}</div>
+  <div class="grid">${CLUBS.map(k=>`<button class="club ${S.club===k?"on":""}" onclick="S.club='${k}';render()">${k}<br><span class="mut" style="font-size:11px">${k==="Putter"?"&nbsp;":(avg(k)?"":"~")+cd(k)+" m"}</span></button>`).join("")}</div>
+  <button class="big" onclick="start()">Je frappe avec ${S.club}</button>`}
  <div class="card" style="margin-top:14px">${g.players.map((p,i)=>`<div class="pl"><div><b>${esc(p.n)}</b><div class="mut"><span class="dot" style="background:${TC[p.t]}"></span>${p.t} · ${p.s[h]?(p.s[h]-par(h)>0?"+":"")+(p.s[h]-par(h))+" / par":"—"}</div></div>
- <div style="display:flex;align-items:center;gap:6px"><button class="pm" onclick="bump(${i},-1);render()">−</button><div class="num">${p.s[h]||"·"}</div><button class="pm" onclick="bump(${i},1);render()">+</button></div></div>`).join("")}</div>
+ <div style="display:flex;align-items:center;gap:6px"><button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},-1);render()">−</button><div class="num" style="font-size:38px;min-width:44px">${p.s[h]||"·"}</div><button class="pm" style="width:44px;height:44px;font-size:22px" onclick="bump(${i},1);render()">+</button></div></div>`).join("")}
+ <div class="mut">Les coups validés avec un club remplissent la carte de ${esc(p0.n)} ; les autres joueurs se saisissent avec + / −.</div></div>
  <div class="card">${g.players.map(p=>{const t=tot(p);return `<div class="pl"><b>${esc(p.n)}</b><span>${t.g} coups (${t.g-t.par>0?"+":""}${t.g-t.par}) · <b>${t.sf} pts</b></span></div>`}).join("")}</div>
- <button class="big alt" onclick="S.view='sheet';render()">Voir la carte complète</button>
- <button class="ghost" onclick="if(confirm('Terminer la partie ?')){S.game=null;save();render()}">Terminer la partie</button>`}
+ <button class="big alt" onclick="nextHole()">${h<g.nh-1?"Trou suivant ›":"Voir la carte finale"}</button>
+ <button class="ghost" onclick="if(confirm('Terminer la partie ?')){unwatch();S.game=null;save();render()}">Terminer la partie</button>`}
 function sheet(){const g=S.game,n=g.nh;
- return `<h1>Carte</h1><div class="card" style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th>${g.players.map(p=>`<th>${esc(p.n)}</th>`).join("")}</tr>
+ return `<h1>Carte</h1><p class="mut" style="margin-top:-6px">${esc(C().name)}</p><div class="card" style="overflow-x:auto"><table><tr><th>Trou</th><th>Par</th>${g.players.map(p=>`<th><span class="dot" style="background:${TC[p.t]}"></span>${esc(p.n)}</th>`).join("")}</tr>
  ${Array.from({length:n},(_,h)=>`<tr><td>${h+1}</td><td>${par(h)}</td>${g.players.map(p=>`<td>${p.s[h]||"–"}</td>`).join("")}</tr>`).join("")}
  <tr><th>Total</th><th>${Array.from({length:n},(_,h)=>par(h)).reduce((a,b)=>a+b)}</th>${g.players.map(p=>`<th>${tot(p).g}</th>`).join("")}</tr>
  <tr><th>Stableford</th><th></th>${g.players.map(p=>`<th>${tot(p).sf}</th>`).join("")}</tr></table></div>
- <button class="big alt" onclick="S.view='hole';render()">Retour au trou ${g.hole+1}</button>`}
+ <button class="big alt" onclick="S.tab='card';render()">Retour au trou ${g.hole+1}</button>`}
 
 /* ---------- Index (WHS simplifié) ---------- */
 const diff=r=>Math.round(113/r.slope*(r.score-r.cr)*10)/10;
@@ -181,26 +246,14 @@ function render(){
  $("ad").style.display=S.premium?"none":"flex";
  $("nav").innerHTML=TABS.map(([k,l])=>`<button class="${S.tab===k?"on":""}" onclick="S.tab='${k}';render()">${l}</button>`).join("");
  const m=$("m");
- if(S.tab==="card")m.innerHTML=!S.game?setup():S.view==="sheet"?sheet():hole();
- if(S.tab==="crs"){const c=C(),cs=Object.values(S.courses);
-  m.innerHTML=`<h1>Parcours</h1><div class="card"><div class="row" style="grid-template-columns:2fr 1fr"><input placeholder="Nom du golf ou ville" value="${esc(S.q)}" oninput="S.q=this.value"><button class="sm on" onclick="search()">Chercher</button></div>
-  <button class="ghost" onclick="near()">Autour de moi</button>${S.msg?`<p class="mut">${S.msg}</p>`:""}
-  ${S.found.map((f,i)=>`<div class="pl"><div><b>${esc(f.name)}</b><div class="mut">${esc(f.place)}</div></div><button class="sm" style="padding:8px 12px" onclick="pick(${i})">Choisir</button></div>`).join("")}</div>
-  ${cs.length>1?`<div class="card"><span class="mut">Mes parcours (disponibles hors ligne)</span>${cs.map(x=>`<div class="pl"><b>${esc(x.name)}</b><button class="sm ${x.id===S.course?"on":""}" style="padding:8px 12px" onclick="S.course='${x.id}';save();render()">${x.id===S.course?"Actif":"Utiliser"}</button></div>`).join("")}</div>`:""}
-  ${c?`<div class="card"><b>${esc(c.name)}</b><div class="mut">${c.holes.filter(h=>h.pts).length} trous cartographiés sur ${c.holes.length}</div>
-  <table><tr><th>Trou</th><th>Par</th><th>Ligne de jeu</th><th></th></tr>${c.holes.map((h,i)=>`<tr><td>${h.ref}</td><td><button class="sm" style="padding:4px 12px" onclick="cyc(${i})">${par(i)}${h.par?"":"*"}</button></td><td>${h.len?h.len+" m":"–"}</td><td>${h.pts?`<button class="sm" style="padding:4px 10px" onclick="openMap(${i})">3D</button>`:""}</td></tr>`).join("")}</table>
-  <p class="mut">* Par absent des données : touche pour le corriger. La distance est celle de la ligne de jeu tracée sur OpenStreetMap, pas celle d'un départ précis.</p></div>`:""}
-  <p class="mut">Données © contributeurs OpenStreetMap. Qualité variable selon les clubs.</p>`}
+ if(S.tab==="card")m.innerHTML=!S.game?setup():hole();
+ if(S.tab==="sheet")m.innerHTML=S.game?sheet():`<h1>Carte</h1><p class="mut">Aucune partie en cours. Lance-en une dans l'onglet Jouer.</p>`;
  if(S.tab==="dist"){
   const st={};S.shots.forEach(s=>(st[s.club]=st[s.club]||[]).push(s.d));
   const rows=CLUBS.filter(c=>st[c]).map(c=>{const a=st[c];return `<tr><td>${c}</td><td>${Math.round(a.reduce((x,y)=>x+y,0)/a.length)} m</td><td>${Math.max(...a)} m</td><td>${a.length}</td></tr>`}).join("");
-  m.innerHTML=`<h1>Distances</h1>
-  ${S.pending?`<div class="card"><b>${S.pending.club}</b> : frappe enregistrée${S.pending.pos?"":" (sans GPS)"}.<br><span class="mut">Marche jusqu'à ta balle, puis valide.</span></div>
-   <button class="big alt" onclick="finish()">Je suis sur la balle : valider</button>
-   <button class="ghost" onclick="S.pending=null;save();render()">Annuler ce coup</button>`
-  :`<div class="grid">${CLUBS.map(c=>`<button class="club ${S.club===c?"on":""}" onclick="S.club='${c}';render()">${c}</button>`).join("")}</div>
-   <button class="big" onclick="start()">Je frappe avec ${S.club}</button>
-   ${S.game?`<p class="mut">Chaque coup validé s'ajoute au score de ${esc(S.game.players[0].n)} au trou ${S.game.hole+1}.</p>`:""}`}
+  m.innerHTML=`<h1>Mon sac</h1><p class="mut" style="margin-top:-6px">Tes distances réelles, alimentées à chaque coup joué. Le caddie s'en sert pour te conseiller.</p>
+  ${S.pending&&!S.game?`<div class="card"><b>${S.pending.club}</b> : frappe enregistrée.</div><button class="big alt" onclick="finish()">Je suis sur la balle : valider</button><button class="ghost" onclick="S.pending=null;save();render()">Annuler</button>`
+  :!S.game?`<div class="mut" style="margin-bottom:6px">Entraînement libre</div><div class="grid">${CLUBS.map(c=>`<button class="club ${S.club===c?"on":""}" onclick="S.club='${c}';render()">${c}</button>`).join("")}</div><button class="big" onclick="start()">Je frappe avec ${S.club}</button>`:""}
   <div class="card" style="margin-top:14px">${rows?`<table><tr><th>Club</th><th>Moy.</th><th>Max</th><th>Coups</th></tr>${rows}</table>`:`<span class="mut">Aucun coup enregistré pour l'instant.</span>`}</div>`}
  if(S.tab==="idx"){const ix=index();
   m.innerHTML=`<h1>Index</h1><div class="card"><span class="mut">Ton index estimé</span><div class="num" style="text-align:left">${ix===null?"—":ix}</div>
@@ -213,7 +266,8 @@ function render(){
   <p>Retire la publicité pour <b>2,99 € / mois</b>. Résiliable à tout moment.</p>
   <button class="big" onclick="S.premium=!S.premium;save();render()">${S.premium?"Désactiver (démo)":"S'abonner (démo)"}</button>
   <p class="mut">Démo : à remplacer par un lien de paiement Stripe.</p></div>`;
+ if(S.tab==="card"&&S.game)updCaddie();
 }
-render();
+render();if(S.game)watch();
 if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script></body></html>
