@@ -115,9 +115,12 @@ const gsText=()=>S.gs==="denied"?"localisation refusée (autorise-la dans les r�
 const DENIED="Localisation refusée. iPhone : Réglages → Confidentialité → Service de localisation → Safari (ou Fairway) → « Lorsque l'app est active » et « Position précise ». Android : Chrome → Paramètres du site → Localisation → Autoriser.";
 function askGeo(){const m=$("obm");if(m)m.textContent="Demande en cours…";
  try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
- if(!navigator.geolocation){S.gs="unavail";render();return}
- navigator.geolocation.getCurrentPosition(p=>{addFix(p);S.ob=1;save();$("ob").hidden=true;wx(true);render()},
-  e=>{S.gs=e.code===1?"denied":"unavail";if(m)m.textContent=e.code===1?DENIED:"Signal GPS introuvable : réessaie en extérieur.";render()},{enableHighAccuracy:true,timeout:20000,maximumAge:0})}
+ if(!location.protocol.startsWith("https")){alert("Cette page n'est pas en https:// : le navigateur bloque toujours la localisation dans ce cas. Ouvre le vrai lien GitHub Pages (https://...github.io/...), pas un aperçu.");return}
+ if(!navigator.geolocation){S.gs="unavail";alert("Ce navigateur ne propose pas la localisation.");render();return}
+ navigator.geolocation.getCurrentPosition(p=>{addFix(p);S.ob=1;save();$("ob").hidden=true;wx(true);alert("Localisation obtenue, précision ± "+Math.round(p.coords.accuracy)+" m.");render()},
+  e=>{S.gs=e.code===1?"denied":e.code===2?"unavail":"unavail";if(m)m.textContent=e.code===1?DENIED:"Signal GPS introuvable : réessaie en extérieur.";
+   alert(e.code===1?"Localisation REFUSÉE par le navigateur (code 1).\n\n"+DENIED:e.code===2?"Position INDISPONIBLE (code 2) : le téléphone n'arrive pas à capter de signal. Sors en extérieur et réessaie.":"Délai dépassé (code 3) : réessaie en extérieur, loin des bâtiments.");render()},
+  {enableHighAccuracy:true,timeout:20000,maximumAge:0})}
 async function start(){S.pending={club:S.club,pos:null,wait:1};render();let p=null;try{p=await gps()}catch(e){}
  if(S.pending){S.pending.pos=p;S.pending.wait=0}save();render()}
 async function finish(){if(!S.pending)return;
