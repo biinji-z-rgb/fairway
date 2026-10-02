@@ -39,7 +39,10 @@ label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
 nav{display:flex;border-top:1px solid var(--line);background:rgba(7,19,14,.92);backdrop-filter:blur(10px)}
 nav button{flex:1;padding:9px 0 8px;border:0;background:none;color:var(--mut);font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px}
 nav button.on{color:var(--gold2)}
-#ad{height:44px;background:rgba(255,255,255,.03);border-top:1px solid var(--line);color:#5f7a6e;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.12em}
+.adbar{height:30px;background:rgba(255,255,255,.022);color:#5a6f65;display:flex;align-items:center;justify-content:center;gap:6px;font-size:9.5px;letter-spacing:.09em;opacity:.8;flex-shrink:0}
+.adbar b{color:#79897f;font-weight:600}
+#ad{border-top:1px solid var(--line)}
+#ad2{border-bottom:1px solid var(--line)}
 .pill{display:inline-block;background:linear-gradient(135deg,#e7d29a,#c9a961);color:#1a1406;border-radius:99px;padding:2px 10px;font-weight:700;font-size:12px;margin-left:6px}
 .pm{border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--fg)}
 .pl{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}.pl:last-child{border:0}
@@ -53,8 +56,9 @@ nav button.on{color:var(--gold2)}
 #mbar{position:absolute;left:12px;right:68px;top:calc(12px + env(safe-area-inset-top,0px));background:rgba(7,19,14,.92);border:1px solid var(--line);color:#fff;border-radius:14px;padding:10px 12px;font-size:14px}
 #mx{position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));width:46px;height:46px;border-radius:50%;border:0;background:#fff;color:#12261f;font-size:18px}
 </style></head><body>
+<div id="ad2" class="adbar"><span>Publicité</span></div>
 <main id="m"></main>
-<div id="ad">Bandeau publicitaire (AdSense / sponsor)</div>
+<div id="ad" class="adbar"><span>Publicité</span> <b>·</b> <span>bannière discrète</span></div>
 <nav id="nav"></nav>
 <div id="qp" hidden><div id="qb"></div><button class="big alt" onclick="$('qp').hidden=true">Fermer</button></div>
 <div id="ob" hidden><div class="hero"><div class="brand">BIENVENUE</div><div class="big2">Active la localisation</div><div class="mut">Pour mesurer tes coups au mètre près, calculer la distance au green et récupérer la météo du golf.</div></div>
@@ -65,7 +69,7 @@ nav button.on{color:var(--gold2)}
 const CLUBS0=["Driver","Bois 3","Bois 5","Hybride","Fer 4","Fer 5","Fer 6","Fer 7","Fer 8","Fer 9","PW","SW","LW","Putter"];
 let CLUBS=CLUBS0.slice();
 /* ⚙️ À REMPLIR (voir README) : Supabase (comptes + sauvegarde) et Stripe (abonnement) */
-const SB_URL="",SB_KEY="",PAY_URL="",PRICE="2,99 € / mois";
+const SB_URL="",SB_KEY="";
 const SBJS="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 const PARS=[4,4,3,5,4,4,3,4,5,4,4,3,5,4,4,3,4,5];
 const TEES=["Blanc","Jaune","Bleu","Rouge"],TC={Blanc:"#f2f2f2",Jaune:"#f0d000",Bleu:"#2a6fdb",Rouge:"#d64545",Noir:"#222",Orange:"#f08a24",Vert:"#2f9e44"};
@@ -73,14 +77,13 @@ const ML="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/";
 const ESRI="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 const PEER="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js",QR="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js";
 const DEM="https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png";
-let S={shots:[],rounds:[],premium:false,club:"Driver",pending:null,tab:"card",game:null,
+let S={shots:[],rounds:[],club:"Driver",pending:null,tab:"card",game:null,
  setup:[{n:"Moi",h:0,t:"Jaune"}],view:"hole",courses:{},course:null,found:[],msg:"",q:"",pid:null,mn:"",mh:null,join:null,jmsg:"",wx:null,pre:null,edit:-1,history:[],delq:[],sy:"",amsg:"",user:null,bag:null,bagAt:0,ob:0,gs:""};
 try{const r=localStorage.getItem("fw2");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
 if(!S.pid)S.pid=Math.random().toString(36).slice(2,12);
 const ME=S.pid;
 if(!S.bag)S.bag=CLUBS0.map(n=>({n,in:1}));
 function syncClubs(){CLUBS=S.bag.filter(c=>c.in).map(c=>c.n)}syncClubs();
-if(!S.user)S.premium=false;
 const save=()=>{try{localStorage.setItem("fw2",JSON.stringify(S))}catch(e){}};
 const TABS=[["card","Jouer"],["sheet","Carte"],["dist","Sac"],["idx","Index"],["me","Profil"]];
 const $=id=>document.getElementById(id);
@@ -373,7 +376,6 @@ const sched=()=>{clearTimeout(SYT);SYT=setTimeout(syncNow,2500)};
 const mergeBy=(a,b,k)=>{const m=new Map();a.concat(b).forEach(x=>{if(!m.has(k(x)))m.set(k(x),x)});return[...m.values()]};
 async function syncNow(){if(!SB_URL||!navigator.onLine||!S.user)return;S.sy="Synchronisation…";
  try{const c=await sbc(),uid=S.user.id;
-  const en=await c.from("entitlements").select("premium").eq("user_id",uid).maybeSingle();S.premium=!!(en.data&&en.data.premium);
   const bk=await c.from("backups").select("data").eq("user_id",uid).maybeSingle();
   if(bk.data){const d=bk.data.data||{};
    S.rounds=mergeBy(S.rounds,d.rounds||[],r=>r.date+"|"+r.score+"|"+r.cr+"|"+r.slope);
@@ -396,17 +398,13 @@ async function auth(kind){const em=$("em").value.trim(),pw=$("pw").value;S.amsg=
   else{r=await c.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});S.amsg=r.error?r.error.message:"E-mail de réinitialisation envoyé."}
   if(r.data&&r.data.session){S.user={id:r.data.session.user.id,email:r.data.session.user.email};S.amsg="";save();syncNow()}}
  catch(e){S.amsg="Connexion internet nécessaire."}render()}
-async function logout(){try{await(await sbc()).auth.signOut()}catch(e){}S.user=null;S.premium=false;S.sy="";save();render()}
+async function logout(){try{await(await sbc()).auth.signOut()}catch(e){}S.user=null;S.sy="";save();render()}
 async function initAuth(){if(!SB_URL)return;try{const c=await sbc();
  c.auth.onAuthStateChange((ev,ss)=>{if(ev==="PASSWORD_RECOVERY"){const p=prompt("Nouveau mot de passe (8 caractères minimum) :");if(p)c.auth.updateUser({password:p}).then(r=>alert(r.error?r.error.message:"Mot de passe mis à jour."))}
   if(ss)S.user={id:ss.user.id,email:ss.user.email};else if(ev==="SIGNED_OUT")S.user=null});
  const{data}=await c.auth.getSession();if(data.session){S.user={id:data.session.user.id,email:data.session.user.email};syncNow()}}catch(e){}}
-function upgrade(){if(!S.user){S.amsg="Crée un compte ou connecte-toi pour passer en Premium.";render();return}
- if(!PAY_URL){alert("Lien de paiement non configuré (voir README).");return}
- location.href=PAY_URL+"?client_reference_id="+encodeURIComponent(S.user.id)+"&prefilled_email="+encodeURIComponent(S.user.email)}
 function saveGame(){const g=S.game,p=P();
  if(S.history.some(h=>h.id===String(g.id)))return true;
- if(!S.premium&&S.history.length>=25){if(confirm("Plan gratuit : 25 parties enregistrées atteintes. Passer en Premium pour un historique illimité ?")){S.tab="me";render()}return false}
  const t=tot(p);S.history.push({id:String(g.id),date:new Date().toISOString().slice(0,10),course:C().name,cid:C().id,nh:g.nh,par:t.par,me:p.n,tee:p.t,g:t.g,sf:t.sf,players:g.players.map(x=>({n:x.n,t:x.t,h:x.h,s:x.s}))});
  save();sched();return true}
 function delGame(id){if(!confirm("Supprimer cette partie ?"))return;S.history=S.history.filter(h=>h.id!==id);if(S.user)S.delq.push(id);save();sched();render()}
@@ -418,9 +416,7 @@ function accountCard(){
 function profil(){const n=S.history.length,H=S.history.slice().sort((a,b)=>b.date.localeCompare(a.date));
  return `<div class="hero"><div class="brand">PROFIL</div>${S.user?`<div class="big2" style="font-size:20px;word-break:break-all">${esc(S.user.email)}</div><div class="mut">${esc(S.sy||"")}</div>`:`<div class="big2" style="font-size:24px">Ton golf, sauvegardé</div><div class="mut">Parties, index et sac protégés par un compte.</div>`}</div>
  ${permCard()}${accountCard()}
- <div class="card"><b>Ton offre</b><span class="pill">${S.premium?"Premium":"Gratuit"}</span>
- ${S.premium?`<p class="mut">Parties illimitées et sans publicité. Merci !</p>`:`<div class="bar"><i style="width:${Math.min(100,n/25*100)}%"></i></div><div class="mut">${n} / 25 parties enregistrées</div>
- ${S.user&&S.amsg?`<p class="mut">${esc(S.amsg)}</p>`:""}<p style="margin:12px 0 0">Premium : historique illimité et sans publicité, <b>${PRICE}</b>.</p><button class="big" onclick="upgrade()">Passer Premium</button><button class="ghost" onclick="syncNow()">J'ai payé : actualiser</button>`}</div>
+ <div class="card"><b>Ton offre</b><span class="pill">Gratuite</span><p class="mut">${n} partie${n>1?"s":""} enregistrée${n>1?"s":""}, sans limite. L'app reste gratuite grâce au bandeau publicitaire.</p></div>
  <div class="card"><b>Historique</b>${H.length?H.map(h=>`<div class="pl"><div><b>${esc(h.course)}</b><div class="mut">${h.date} · ${esc(h.me)}</div></div><div style="text-align:right"><span class="gold">${h.g} coups · ${h.sf} pts</span> <button class="ghost" style="width:auto;padding:4px 8px;display:inline" onclick="delGame('${h.id}')">✕</button></div></div>`).join(""):`<p class="mut">Aucune partie enregistrée. Enregistre-les depuis l'onglet Carte.</p>`}</div>`}
 
 /* ---------- Sac & matériel ---------- */
@@ -443,7 +439,7 @@ function bagUI(){const n=S.bag.filter(c=>c.in).length,st={};S.shots.forEach(s=>(
 /* ---------- Rendu ---------- */
 const IC={card:'<path d="M6 21V4M6 4h11l-3 4 3 4H6"/>',sheet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',dist:'<path d="M7 9h10l1 12H6zM9 9V6a3 3 0 0 1 6 0v3"/>',idx:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',me:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'};
 function render(){
- $("ad").style.display=S.premium?"none":"flex";
+ $("ad").style.display=$("ad2").style.display="flex";
  $("nav").innerHTML=TABS.map(([k,l])=>`<button class="${S.tab===k?"on":""}" onclick="S.tab='${k}';render()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${IC[k]}</svg>${l}</button>`).join("");
  if(!CLUBS.includes(S.club))S.club=CLUBS[0]||"Driver";
  const m=$("m");
